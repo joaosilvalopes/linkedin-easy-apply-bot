@@ -14,13 +14,13 @@ async function fetchJobLinksGuest({ page, location, keywords, remote, easyApply 
     let numJobsDisplayed = await page.$$(".jobs-search__results-list li").then(el => el.length);
     while (numJobsDisplayed < numJobs) {
       try {
-        await page.click(".infinite-scroller__show-more-button");
-        await wait(2000); // wait for new job listings to load
-        await page.waitForSelector(".infinite-scroller__show-more-button", { visible: true, timeout: 3000 });
+        await page.click(".infinite-scroller__show-more-button:enabled");
+        await wait(1000);
+        await page.waitForSelector(".infinite-scroller__show-more-button:enabled", { visible: true, timeout: 3000 });
         numJobsDisplayed = await page.$$(".jobs-search__results-list li").then(el => el.length);
       } catch (err) {
         await page.evaluate('window.scrollTo(0, document.body.scrollHeight)');
-        await wait(2000); // wait for new job listings to load
+        await wait(1000);
         numJobsDisplayed = await page.$$(".jobs-search__results-list li").then(el => el.length);
       }
       console.log(numJobsDisplayed + '/' + numJobs + ' ' + keywords + ' remote jobs in ' + location + ' loaded');
