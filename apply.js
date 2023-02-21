@@ -31,9 +31,9 @@ dotenv.config();
 
   console.log(links);
 
-  for(const link of links) {
+  for(const link of links.slice(0,1)) {
     const page = await context.newPage();
-    await apply({ page, link, formData: { phone: process.env.PHONE, cvPath: process.env.CV_PATH } });
+    await apply({ page, link, formData: { phone: process.env.PHONE, cvPath: process.env.CV_PATH, homeCity: process.env.HOME_CITY, coverLetterPath: process.env.COVER_LETTER_PATH } });
     await wait(2000);
 
   }

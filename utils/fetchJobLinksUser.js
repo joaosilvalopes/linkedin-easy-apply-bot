@@ -13,7 +13,7 @@ async function fetchJobLinksUser({ page, location, keywords, remote, easyApply }
   const numJobsHandle = await page.waitForSelector('small.jobs-search-results-list__text', { visible: true, timeout: 5000 });
   const numJobs = await numJobsHandle.evaluate((el) => parseInt(el.innerText.replace(',', '')));
 
-  while (jobLinks.length < numjobs) {
+  while (jobLinks.length < 1) {
     try {
       const url = `https://www.linkedin.com/jobs/search/?keywords=${keywords}&location=${location}&start=${jobLinks.length}${remote ? '&f_WRA=true' : ''}${easyApply ? '&f_AL=true' : ''}`;
 
