@@ -15,15 +15,14 @@ async function fetchJobLinksGuest({ page, location, keywords, remote, easyApply 
     while (numJobsDisplayed < numJobs) {
       try {
         await page.click(".infinite-scroller__show-more-button:enabled");
-        await wait(1000);
         await page.waitForSelector(".infinite-scroller__show-more-button:enabled", { visible: true, timeout: 3000 });
         numJobsDisplayed = await page.$$(".jobs-search__results-list li").then(el => el.length);
       } catch (err) {
         await page.evaluate('window.scrollTo(0, document.body.scrollHeight)');
-        await wait(1000);
         numJobsDisplayed = await page.$$(".jobs-search__results-list li").then(el => el.length);
       }
       console.log(numJobsDisplayed + '/' + numJobs + ' ' + keywords + ' remote jobs in ' + location + ' loaded');
+      await wait(2000);
     }
   
     // Extract job information from the loaded job listings
@@ -31,12 +30,12 @@ async function fetchJobLinksGuest({ page, location, keywords, remote, easyApply 
   
     for(const job of jobListings) {
       //console.log(await job.getProperty('innerHTML').then((property) => property.jsonValue()));
-      /* const title = await job.$eval(".base-search-card__title", (el) => el.innerText.trim());
+      const title = await job.$eval(".base-search-card__title", (el) => el.innerText.trim());
       const company = await job.$eval(".base-search-card__subtitle", (el) => el.innerText.trim());
-      const location = await job.$eval(".job-search-card__location", (el) => el.innerText.trim()); */
+      const location = await job.$eval(".job-search-card__location", (el) => el.innerText.trim());
       const link = await job.$eval("a", (el) => el.href);
   
-      jobLinks.push(link);
+      jobLinks.push({link, location, company, title });
     };
   
     return jobLinks;
