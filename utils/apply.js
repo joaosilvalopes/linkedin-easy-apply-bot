@@ -1,5 +1,3 @@
-const wait = require("./wait");
-
 const noop = () => {};
 
 async function clickEasyApplyButton(page) {
@@ -8,7 +6,7 @@ async function clickEasyApplyButton(page) {
 }
 
 async function insertPhone(page, phone) {
-    await page.type("input[id*='easyApplyFormElement'][id*='phoneNumber']", phone);
+    await page.$eval("input[id*='easyApplyFormElement'][id*='phoneNumber']", el => el.value = phone);
 }
 
 async function unFollowCompanyCheckbox(page) {
@@ -16,7 +14,7 @@ async function unFollowCompanyCheckbox(page) {
 }
 
 async function uploadDocs(page, cvPath, coverLetterPath) {
-    const docDivs = await page.$$("div[class*='js-jobs-document-upload']");
+    const docDivs = await page.$$("div[class*='jobs-document-upload']");
 
     for (const docDiv of docDivs) {
         const label = await docDiv.$("label[class*='jobs-document-upload']");
@@ -33,7 +31,9 @@ async function uploadDocs(page, cvPath, coverLetterPath) {
 }
 
 async function clickNextButton(page) {
-    await page.click("button[data-easy-apply-next-button]");
+    await page.click("footer button[aria-label*='next'], footer button[aria-label*='Review']");
+
+    await page.waitForSelector("footer button[aria-label*='Submit']:enabled, footer button[aria-label*='next']:enabled, footer button[aria-label*='Review']:enabled", { visible: true, timeout: 10000 });
 }
 
 async function insertHomeCity(page, homeCity) {
@@ -41,10 +41,27 @@ async function insertHomeCity(page, homeCity) {
 }
 
 async function submit(page) {
-    await page.click("footer button[class*='artdeco-button--primary']:not([data-easy-apply-next-button])");
+    await page.click("footer button[aria-label*='Submit']");
 }
+/*
+async function insertYearsOfExperience(page, formData) {
+    const yoe = JSON.parse(YEARS_OF_EXPERIENCE);
+    const inputLabels = [];
+    const inputs = await page.$$("jobs-easy-apply-modal input[type='text']");
 
-async function fillFields(page) {
+    for (const input of inputs) {
+        $('label[for="foo"]');
+    }
+
+    for (const [skill, years] of Object.values(yoe)) {
+        for (const input of inputs) {
+            
+        }
+    }
+
+}*/
+
+async function fillFields(page, formData) {
     await insertHomeCity(page, formData.homeCity).catch(noop);
 
     await insertPhone(page, formData.phone).catch(noop);
@@ -70,15 +87,15 @@ async function apply({ page, link, formData }) {
         return;
     } catch { }*/
 
-    await fillFields(page).catch(noop);
+    await fillFields(page, formData).catch(noop);
 
     await clickNextButton(page).catch(noop);
 
-    await fillFields(page).catch(noop);
+    await fillFields(page, formData).catch(noop);
 
     await clickNextButton(page).catch(noop);
 
-    await fillFields(page).catch(noop);
+    await fillFields(page, formData).catch(noop);
 
     await clickNextButton(page).catch(noop);
 
