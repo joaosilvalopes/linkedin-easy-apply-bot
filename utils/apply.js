@@ -40,26 +40,26 @@ async function insertHomeCity(page, homeCity) {
     await page.$eval("input[id*='easyApplyFormElement'][id*='city-HOME-CITY']", el => el.value = homeCity);
 }
 
-async function submit(page) {
-    await page.click("footer button[aria-label*='Submit']");
-}
-/*
 async function insertYearsOfExperience(page, formData) {
-    const yoe = JSON.parse(YEARS_OF_EXPERIENCE);
-    const inputLabels = [];
-    const inputs = await page.$$("jobs-easy-apply-modal input[type='text']");
+    const yoe = JSON.parse(formData.yearsOfExperience);
+    const inputsByLabel = {};
+    const inputs = await page.$$(".jobs-easy-apply-modal input[type='text']");
 
     for (const input of inputs) {
-        $('label[for="foo"]');
+        const id = await input.evaluate(el => el.id);
+        const label = await page.$eval(`.jobs-easy-apply-modal label[for="${id}"]`, el => el.innerText);
+
+        inputsByLabel[label] = input;
     }
 
-    for (const [skill, years] of Object.values(yoe)) {
-        for (const input of inputs) {
-            
+    for (const [label, input] of Object.entries(inputsByLabel)) {
+        for (const [skill, years] of Object.entries(yoe)) {
+            if(label.toLowerCase().includes(skill.toLowerCase())) {
+                await input.evaluate((el, years) => el.value = years, years);
+            }
         }
     }
-
-}*/
+}
 
 async function fillFields(page, formData) {
     await insertHomeCity(page, formData.homeCity).catch(noop);
@@ -69,6 +69,12 @@ async function fillFields(page, formData) {
     await unFollowCompanyCheckbox(page).catch(noop);
 
     await uploadDocs(page, formData.cvPath, formData.coverLetterPath).catch(noop);
+
+    await insertYearsOfExperience(page, formData).catch(console.log);
+}
+
+async function submit(page) {
+    await page.click("footer button[aria-label*='Submit']");
 }
 
 async function apply({ page, link, formData }) {
@@ -81,24 +87,23 @@ async function apply({ page, link, formData }) {
         return;
     }
 
-    /*try {
+    await fillFields(page, formData).catch(noop);
+
+    await clickNextButton(page).catch(noop);
+
+    await fillFields(page, formData).catch(noop);
+
+    await clickNextButton(page).catch(noop);
+
+    await fillFields(page, formData).catch(noop);
+
+    await clickNextButton(page).catch(noop);
+
+    try {
         //await submit(page);
 
         return;
-    } catch { }*/
-
-    await fillFields(page, formData).catch(noop);
-
-    await clickNextButton(page).catch(noop);
-
-    await fillFields(page, formData).catch(noop);
-
-    await clickNextButton(page).catch(noop);
-
-    await fillFields(page, formData).catch(noop);
-
-    await clickNextButton(page).catch(noop);
-
+    } catch { }
 }
 
 module.exports = apply;

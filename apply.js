@@ -33,7 +33,7 @@ dotenv.config();
 
   for(const link of links) {
     const page = await context.newPage();
-    await apply({ page, link, formData: { phone: process.env.PHONE, cvPath: process.env.CV_PATH, homeCity: process.env.HOME_CITY, coverLetterPath: process.env.COVER_LETTER_PATH } });
+    await apply({ page, link, formData: { phone: process.env.PHONE, cvPath: process.env.CV_PATH, homeCity: process.env.HOME_CITY, coverLetterPath: process.env.COVER_LETTER_PATH, yearsOfExperience: process.env.YEARS_OF_EXPERIENCE } });
     await wait(2000);
 
   }
