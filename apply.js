@@ -5,7 +5,6 @@ const wait = require("./utils/wait");
 const login = require("./utils/login");
 const apply = require("./utils/apply");
 const fetchJobLinksUser = require("./utils/fetchJobLinksUser");
-const fetchJobLinksGuest = require("./utils/fetchJobLinksGuest");
 
 dotenv.config();
 
@@ -42,7 +41,8 @@ dotenv.config();
         homeCity: process.env.HOME_CITY,
         coverLetterPath: process.env.COVER_LETTER_PATH,
         yearsOfExperience: process.env.YEARS_OF_EXPERIENCE,
-        languageProficiency: process.env.LANGUAGE_PROFICIENCY
+        languageProficiency: process.env.LANGUAGE_PROFICIENCY,
+        requiresVisaSponsorship: process.env.REQUIRES_VISA_SPONSORSHIP === "true",
       }
     });
     await wait(2000);

@@ -1,12 +1,22 @@
 const noop = () => {};
 
+async function changeTextInput(container, selector, value) {
+    const input = await container.$(selector);
+    const previousValue = await input.evaluate(el => el.value);
+
+    if(previousValue !== value) {
+        await input.click({ clickCount: 3 }); // Select whole text to replace existing text
+        await input.type(value);
+    }
+}
+
 async function clickEasyApplyButton(page) {
     await page.waitForSelector('button.jobs-apply-button:enabled', { visible: true, timeout: 10000 });
     await page.click('.jobs-apply-button');
 }
 
 async function insertPhone(page, phone) {
-    await page.$eval("input[id*='easyApplyFormElement'][id*='phoneNumber']", el => el.value = phone);
+    await changeTextInput(page, "input[id*='easyApplyFormElement'][id*='phoneNumber']", phone);
 }
 
 async function unFollowCompanyCheckbox(page) {
@@ -20,7 +30,6 @@ async function uploadDocs(page, cvPath, coverLetterPath) {
         const label = await docDiv.$("label[class*='jobs-document-upload']");
         const input = await docDiv.$("input[id*='easyApplyFormElement'][id*='jobApplicationFileUploadFormElement']");
         const text = await label.evaluate((el) => el.innerText.trim());
-        console.log(text);
 
         if(text.includes("resume")) {
             await input.uploadFile(cvPath);
@@ -37,7 +46,7 @@ async function clickNextButton(page) {
 }
 
 async function insertHomeCity(page, homeCity) {
-    await page.$eval("input[id*='easyApplyFormElement'][id*='city-HOME-CITY']", el => el.value = homeCity);
+    await changeTextInput(page, "input[id*='easyApplyFormElement'][id*='city-HOME-CITY']", homeCity);
 }
 
 async function insertLanguageProficiency(page, formData) {
@@ -58,11 +67,11 @@ async function insertLanguageProficiency(page, formData) {
                 const option = await input.$$eval(`option`, (options, level) => {
                     const option = options.find(option => option.value.toLowerCase() === level.toLowerCase());
 
-                    return option || option.value;
+                    return option && option.value;
                 }, level);
 
                 if(option) {
-                    await input.evaluate((el, option) => el.value = option, option);
+                    await input.select(option);
                 }
 
                 continue;
@@ -86,10 +95,31 @@ async function insertYearsOfExperience(page, formData) {
     for (const [skill, years] of Object.entries(yoe)) {
         for (const [label, input] of Object.entries(inputsByLabel)) {
             if(label.toLowerCase().includes(skill.toLowerCase())) {
-                await input.evaluate((el, years) => el.value = years, years);
+                const previousValue = await input.evaluate(el => el.value);
+                const newValue = years.toString();
+
+                if(previousValue !== newValue) {
+                    await input.click({ clickCount: 3 }); // Select whole text to replace existing text
+                    await input.type(newValue);
+                }
 
                 continue;
             }
+        }
+    }
+}
+
+async function insertRequiresVisaSponsorship(page, requiresVisaSponsorship) {
+    const fieldsets = await page.$$("fieldset");
+
+
+    for (const fieldset of fieldsets) {
+        const label = await fieldset.$eval('legend', el => el.innerText);
+
+        if(label.toLowerCase().includes('sponsorship')) {
+            const input = await fieldset.$(`input[type='radio'][value='${requiresVisaSponsorship ? 'Yes' : 'No'}']`);
+
+            await input.click();
         }
     }
 }
@@ -106,6 +136,8 @@ async function fillFields(page, formData) {
     await insertYearsOfExperience(page, formData).catch(console.log);
 
     await insertLanguageProficiency(page, formData).catch(console.log);
+
+    await insertRequiresVisaSponsorship(page, formData.requiresVisaSponsorship).catch(console.log);
 }
 
 async function submit(page) {
