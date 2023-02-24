@@ -40,6 +40,37 @@ async function insertHomeCity(page, homeCity) {
     await page.$eval("input[id*='easyApplyFormElement'][id*='city-HOME-CITY']", el => el.value = homeCity);
 }
 
+async function insertLanguageProficiency(page, formData) {
+    const languageProficiency = JSON.parse(formData.languageProficiency);
+    const inputsByLabel = {};
+    const inputs = await page.$$(".jobs-easy-apply-modal select");
+
+    for (const input of inputs) {
+        const id = await input.evaluate(el => el.id);
+        const label = await page.$eval(`.jobs-easy-apply-modal label[for="${id}"]`, el => el.innerText);
+
+        inputsByLabel[label] = input;
+    }
+
+    for (const [language, level] of Object.entries(languageProficiency)) {
+        for (const [label, input] of Object.entries(inputsByLabel)) {
+            if(label.toLowerCase().includes(language.toLowerCase())) {
+                const option = await input.$$eval(`option`, (options, level) => {
+                    const option = options.find(option => option.value.toLowerCase() === level.toLowerCase());
+
+                    return option || option.value;
+                }, level);
+
+                if(option) {
+                    await input.evaluate((el, option) => el.value = option, option);
+                }
+
+                continue;
+            }
+        }
+    }
+}
+
 async function insertYearsOfExperience(page, formData) {
     const yoe = JSON.parse(formData.yearsOfExperience);
     const inputsByLabel = {};
@@ -52,10 +83,12 @@ async function insertYearsOfExperience(page, formData) {
         inputsByLabel[label] = input;
     }
 
-    for (const [label, input] of Object.entries(inputsByLabel)) {
-        for (const [skill, years] of Object.entries(yoe)) {
+    for (const [skill, years] of Object.entries(yoe)) {
+        for (const [label, input] of Object.entries(inputsByLabel)) {
             if(label.toLowerCase().includes(skill.toLowerCase())) {
                 await input.evaluate((el, years) => el.value = years, years);
+
+                continue;
             }
         }
     }
@@ -71,6 +104,8 @@ async function fillFields(page, formData) {
     await uploadDocs(page, formData.cvPath, formData.coverLetterPath).catch(noop);
 
     await insertYearsOfExperience(page, formData).catch(console.log);
+
+    await insertLanguageProficiency(page, formData).catch(console.log);
 }
 
 async function submit(page) {
