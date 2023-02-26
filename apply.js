@@ -12,7 +12,6 @@ dotenv.config();
   const browser = await puppeteer.launch({
     headless: false,
     ignoreHTTPSErrors: true,
-    executablePath: '/snap/bin/chromium',
     args: ["--disable-setuid-sandbox", "--no-sandbox",]
   });
   const context = await browser.createIncognitoBrowserContext();
@@ -43,10 +42,11 @@ dotenv.config();
         yearsOfExperience: process.env.YEARS_OF_EXPERIENCE,
         languageProficiency: process.env.LANGUAGE_PROFICIENCY,
         requiresVisaSponsorship: process.env.REQUIRES_VISA_SPONSORSHIP === "true",
+        booleans: process.env.BOOLEANS,
+        textFields: process.env.TEXT_FIELDS,
       }
     });
     await wait(2000);
-
   }
 
   // await browser.close();

@@ -1,7 +1,12 @@
 const noop = () => {};
 
 async function changeTextInput(container, selector, value) {
-    const input = await container.$(selector);
+    let input = container;
+
+    if(selector) {
+        input = await container.$(selector)
+    }
+
     const previousValue = await input.evaluate(el => el.value);
 
     if(previousValue !== value) {
@@ -13,14 +18,6 @@ async function changeTextInput(container, selector, value) {
 async function clickEasyApplyButton(page) {
     await page.waitForSelector('button.jobs-apply-button:enabled', { visible: true, timeout: 10000 });
     await page.click('.jobs-apply-button');
-}
-
-async function insertPhone(page, phone) {
-    await changeTextInput(page, "input[id*='easyApplyFormElement'][id*='phoneNumber']", phone);
-}
-
-async function unFollowCompanyCheckbox(page) {
-    await page.$eval('input#follow-company-checkbox', el => el.checked = false);
 }
 
 async function uploadDocs(page, cvPath, coverLetterPath) {
@@ -43,6 +40,10 @@ async function clickNextButton(page) {
     await page.click("footer button[aria-label*='next'], footer button[aria-label*='Review']");
 
     await page.waitForSelector("footer button[aria-label*='Submit']:enabled, footer button[aria-label*='next']:enabled, footer button[aria-label*='Review']:enabled", { visible: true, timeout: 10000 });
+}
+
+async function insertPhone(page, phone) {
+    await changeTextInput(page, "input[id*='easyApplyFormElement'][id*='phoneNumber']", phone);
 }
 
 async function insertHomeCity(page, homeCity) {
@@ -80,46 +81,56 @@ async function insertLanguageProficiency(page, formData) {
     }
 }
 
-async function insertYearsOfExperience(page, formData) {
-    const yoe = JSON.parse(formData.yearsOfExperience);
-    const inputsByLabel = {};
-    const inputs = await page.$$(".jobs-easy-apply-modal input[type='text']");
+async function fillBoolean(page, booleans) {
+    const fieldsets = await page.$$("fieldset");
 
-    for (const input of inputs) {
-        const id = await input.evaluate(el => el.id);
-        const label = await page.$eval(`.jobs-easy-apply-modal label[for="${id}"]`, el => el.innerText);
+    // fill 2 option radio button field sets
+    for(const fieldset of fieldsets) {
+        const options = await fieldset.$$('input[type="radio"]');
 
-        inputsByLabel[label] = input;
+        if(options.length === 2) {
+            const label = await fieldset.$eval('legend', el => el.innerText);
+
+            for(const [labelRegex, value] of Object.entries(booleans)) {
+                if(new RegExp(labelRegex, "i").test(label)) {
+                    const input = await fieldset.$(`input[type='radio'][value='${value ? 'Yes' : 'No'}']`);
+    
+                    await input.click();
+                }
+            }
+        }
     }
 
-    for (const [skill, years] of Object.entries(yoe)) {
-        for (const [label, input] of Object.entries(inputsByLabel)) {
-            if(label.toLowerCase().includes(skill.toLowerCase())) {
-                const previousValue = await input.evaluate(el => el.value);
-                const newValue = years.toString();
+    // fill checkboxes
+    const checkboxes = await page.$$('.jobs-easy-apply-modal input[type="checkbox"]');
 
-                if(previousValue !== newValue) {
-                    await input.click({ clickCount: 3 }); // Select whole text to replace existing text
-                    await input.type(newValue);
+    for(const checkbox of checkboxes) {
+        const id = await checkbox.evaluate(el => el.id);
+        const label = await page.$eval(`label[for="${id}"]`, el => el.innerText);
+
+        for(const [labelRegex, value] of Object.entries(booleans)) {
+            if(new RegExp(labelRegex, "i").test(label)) {
+                const previousValue = await checkbox.evaluate(el => el.checked);
+
+                if(value !== previousValue) {
+                    await checkbox.evaluate(el => el.click());
                 }
-
-                continue;
             }
         }
     }
 }
 
-async function insertRequiresVisaSponsorship(page, requiresVisaSponsorship) {
-    const fieldsets = await page.$$("fieldset");
+async function fillTextFields(page, textFields) {
+    const inputs = await page.$$('.jobs-easy-apply-modal input[type="text"]');
 
+    for(const input of inputs) {
+        const id = await input.evaluate(el => el.id);
+        const label = await page.$eval(`label[for="${id}"]`, el => el.innerText).catch(() => "");
 
-    for (const fieldset of fieldsets) {
-        const label = await fieldset.$eval('legend', el => el.innerText);
-
-        if(label.toLowerCase().includes('sponsorship')) {
-            const input = await fieldset.$(`input[type='radio'][value='${requiresVisaSponsorship ? 'Yes' : 'No'}']`);
-
-            await input.click();
+        for(const [labelRegex, value] of Object.entries(textFields)) {
+            if(new RegExp(labelRegex, "i").test(label)) {
+                changeTextInput(input, "", value.toString());
+            }
         }
     }
 }
@@ -129,15 +140,24 @@ async function fillFields(page, formData) {
 
     await insertPhone(page, formData.phone).catch(noop);
 
-    await unFollowCompanyCheckbox(page).catch(noop);
-
     await uploadDocs(page, formData.cvPath, formData.coverLetterPath).catch(noop);
-
-    await insertYearsOfExperience(page, formData).catch(console.log);
 
     await insertLanguageProficiency(page, formData).catch(console.log);
 
-    await insertRequiresVisaSponsorship(page, formData.requiresVisaSponsorship).catch(console.log);
+    const textFields = {
+        ...JSON.parse(formData.textFields),
+        ...JSON.parse(formData.yearsOfExperience)
+    };
+
+    await fillTextFields(page, textFields).catch(console.log);
+
+    const booleans = JSON.parse(formData.booleans);
+
+    booleans.sponsorship = formData.requiresVisaSponsorship;
+
+    booleans.follow = false;
+
+    await fillBoolean(page, booleans).catch(console.log);
 }
 
 async function submit(page) {
@@ -154,17 +174,14 @@ async function apply({ page, link, formData }) {
         return;
     }
 
-    await fillFields(page, formData).catch(noop);
+    let maxPages = 5;
 
-    await clickNextButton(page).catch(noop);
-
-    await fillFields(page, formData).catch(noop);
-
-    await clickNextButton(page).catch(noop);
-
-    await fillFields(page, formData).catch(noop);
-
-    await clickNextButton(page).catch(noop);
+    while(maxPages--) {
+        await fillFields(page, formData).catch(noop);
+    
+        await clickNextButton(page).catch(noop);
+        await page.waitForFunction(() => !document.querySelector("div[id*='error'] div[class*='error']"), { timeout: 1000 }).catch(noop);
+    }
 
     try {
         //await submit(page);
