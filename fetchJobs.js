@@ -10,7 +10,6 @@ dotenv.config();
   const browser = await puppeteer.launch({
     headless: false,
     ignoreHTTPSErrors: true,
-    executablePath: process.env.CHROME_PATH,
     args: ["--disable-setuid-sandbox", "--no-sandbox",]
   });
   const context = await browser.createIncognitoBrowserContext();
