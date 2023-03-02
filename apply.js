@@ -32,7 +32,7 @@ dotenv.config();
   console.log(links);
 
   for (const link of links) {
-    if (process.env.SINGLE_PAGE === "false")
+    if (process.env.SINGLE_PAGE !== "true")
       page = await context.newPage();
     await apply({
       page,
