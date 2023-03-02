@@ -15,7 +15,9 @@ dotenv.config();
     args: ["--disable-setuid-sandbox", "--no-sandbox",]
   });
   const context = await browser.createIncognitoBrowserContext();
-  const page = await context.newPage();
+  let page = await context.newPage();
+  const pages = await browser.pages();
+  await pages[0].close();
 
   await login({ page, email: process.env.LINKEDIN_EMAIL, password: process.env.LINKEDIN_PASSWORD });
 
@@ -29,8 +31,9 @@ dotenv.config();
 
   console.log(links);
 
-  for(const link of links) {
-    const page = await context.newPage();
+  for (const link of links) {
+    if (process.env.SINGLE_PAGE !== "true")
+      page = await context.newPage();
     await apply({
       page,
       link,
