@@ -18,7 +18,8 @@ async function login({ page, email, password }) {
   // Enter login credentials and submit the form
   await page.type('#session_key', email);
   await page.type('#session_password', password);
-  await page.click('.sign-in-form__submit-button');
+
+  await page.click('button[class*="sign-in-form__submit-btn"]');
 
   // Wait for the login to complete
   await page.waitForNavigation({ waitUntil: 'load' });

@@ -15,7 +15,7 @@ async function fetchJobLinksGuest({ page, location, keywords, remote, easyApply 
     while (numJobsDisplayed < numJobs) {
       try {
         await page.click(".infinite-scroller__show-more-button:enabled");
-        await page.waitForSelector(".infinite-scroller__show-more-button:enabled", { visible: true, timeout: 3000 });
+        await page.waitForSelector(".infinite-scroller__show-more-button:enabled", { timeout: 3000 });
         numJobsDisplayed = await page.$$(".jobs-search__results-list li").then(el => el.length);
       } catch (err) {
         await page.evaluate('window.scrollTo(0, document.body.scrollHeight)');
