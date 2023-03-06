@@ -118,10 +118,34 @@ async function fillBoolean(page, booleans) {
             }
         }
     }
+
+    // fill 2 option selects
+    const selects = await page.$$(".jobs-easy-apply-modal select");
+
+    for(const select of selects) {
+        const options = (await select.$$('option'));
+
+        options.shift();
+
+        if(options.length === 2) {
+            const id = await select.evaluate(el => el.id);
+            const label = await page.$eval(`label[for="${id}"]`, el => el.innerText);
+
+            for(const [labelRegex, value] of Object.entries(booleans)) {
+                if(new RegExp(labelRegex, "i").test(label)) {
+                    const option = await options[value ? 0 : 1].evaluate((el) => el.value);
+
+                    await select.select(option);
+    
+                    continue;
+                }
+            }
+        }
+    }
 }
 
 async function fillTextFields(page, textFields) {
-    const inputs = await page.$$('.jobs-easy-apply-modal input[type="text"]');
+    const inputs = await page.$$('.jobs-easy-apply-modal input[type="text"], .jobs-easy-apply-modal textarea');
 
     for(const input of inputs) {
         const id = await input.evaluate(el => el.id);
@@ -129,7 +153,7 @@ async function fillTextFields(page, textFields) {
 
         for(const [labelRegex, value] of Object.entries(textFields)) {
             if(new RegExp(labelRegex, "i").test(label)) {
-                changeTextInput(input, "", value.toString());
+                await changeTextInput(input, "", value.toString());
             }
         }
     }
@@ -151,7 +175,7 @@ async function fillFields(page, formData) {
 
     await fillTextFields(page, textFields).catch(console.log);
 
-    const booleans = JSON.parse(formData.booleans);
+    const booleans = Object.entries(JSON.parse(formData.booleans)).reduce((acc,[key, value]) => ({ ...acc, [key]: value === 'true' }), {});
 
     booleans.sponsorship = formData.requiresVisaSponsorship;
 
