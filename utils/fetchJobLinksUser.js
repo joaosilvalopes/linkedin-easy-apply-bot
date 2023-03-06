@@ -13,6 +13,7 @@ async function fetchJobLinksUser({ page, location, keywords, remote, easyApply, 
 
   const numJobsHandle = await page.waitForSelector('small.jobs-search-results-list__text', { timeout: 5000 });
   const numJobs = await numJobsHandle.evaluate((el) => parseInt(el.innerText.replace(',', '')));
+  const jobTitleRexExp = new RegExp(jobTitle, 'i');
 
   while (i < 64) {
     const url = `https://www.linkedin.com/jobs/search/?keywords=${keywords}&location=${location}&start=${i}${remote ? '&f_WRA=true' : ''}${easyApply ? '&f_AL=true' : ''}`;
@@ -29,7 +30,7 @@ async function fetchJobLinksUser({ page, location, keywords, remote, easyApply, 
         const linkHandle = await job.waitForSelector('a.job-card-list__title', { timeout: 10000 });
         const [link, title] = await linkHandle.evaluate((el) => [el.href.trim(), el.innerText.trim()]);
 
-        if (new RegExp(jobTitle, 'i').test(title)) {
+        if (jobTitleRexExp.test(title)) {
           jobs.push(link);
           console.log(jobs.length + ' ' + keywords + ' remote jobs in ' + location + ' loaded, job title: ' + title);
         }
