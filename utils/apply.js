@@ -16,7 +16,7 @@ async function changeTextInput(container, selector, value) {
 }
 
 async function clickEasyApplyButton(page) {
-    await page.waitForSelector('button.jobs-apply-button:enabled', { visible: true, timeout: 10000 });
+    await page.waitForSelector('button.jobs-apply-button:enabled', { timeout: 10000 });
     await page.click('.jobs-apply-button');
 }
 
@@ -39,7 +39,7 @@ async function uploadDocs(page, cvPath, coverLetterPath) {
 async function clickNextButton(page) {
     await page.click("footer button[aria-label*='next'], footer button[aria-label*='Review']");
 
-    await page.waitForSelector("footer button[aria-label*='Submit']:enabled, footer button[aria-label*='next']:enabled, footer button[aria-label*='Review']:enabled", { visible: true, timeout: 10000 });
+    await page.waitForSelector("footer button[aria-label*='Submit']:enabled, footer button[aria-label*='next']:enabled, footer button[aria-label*='Review']:enabled", { timeout: 10000 });
 }
 
 async function insertPhone(page, phone) {

@@ -26,7 +26,8 @@ dotenv.config();
     location: process.env.LOCATION,
     keywords: process.env.KEYWORDS,
     remote: process.env.REMOTE === "true",
-    easyApply: process.env.EASY_APPLY === "true"
+    easyApply: process.env.EASY_APPLY === "true",
+    jobTitle: process.env.JOB_TITLE,
   });
 
   console.log(links);
