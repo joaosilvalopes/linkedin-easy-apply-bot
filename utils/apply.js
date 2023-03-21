@@ -144,6 +144,29 @@ async function fillBoolean(page, booleans) {
     }
 }
 
+async function fillMultipleChoiceFields(page, multipleChoiceFields) {
+    const selects = await page.$$(".jobs-easy-apply-modal select");
+
+    for(const select of selects) {
+        const id = await select.evaluate(el => el.id);
+        const label = await page.$eval(`label[for="${id}"]`, el => el.innerText);
+
+        for(const [labelRegex, value] of Object.entries(multipleChoiceFields)) {
+            if(new RegExp(labelRegex, "i").test(label)) {
+                const option = await select.$$eval(`option`, (options, value) => {
+                    const option = options.find(option => option.value.toLowerCase() === value.toLowerCase());
+
+                    return option && option.value;
+                }, value);
+
+                if(option) {
+                    await select.select(option);
+                }
+            }
+        }
+    }
+}
+
 async function fillTextFields(page, textFields) {
     const inputs = await page.$$('.jobs-easy-apply-modal input[type="text"], .jobs-easy-apply-modal textarea');
 
@@ -182,6 +205,8 @@ async function fillFields(page, formData) {
     booleans.follow = false;
 
     await fillBoolean(page, booleans).catch(console.log);
+
+    await fillMultipleChoiceFields(page, JSON.parse(formData.multipleChoiceFields)).catch(console.log);
 }
 
 async function submit(page) {
