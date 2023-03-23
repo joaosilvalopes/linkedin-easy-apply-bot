@@ -1,6 +1,7 @@
 const puppeteer = require("puppeteer");
 const dotenv = require("dotenv");
 
+const fs = require('fs');
 const wait = require("../utils/wait");
 const login = require("../login");
 const apply = require("../apply");
@@ -18,6 +19,11 @@ dotenv.config();
   let page = await context.newPage();
   const pages = await browser.pages();
   await pages[0].close();
+
+  if (!fs.existsSync('.env')) {
+    console.log("File .env not found");
+    process.exit(1);
+  }
 
   await login({ page, email: process.env.LINKEDIN_EMAIL, password: process.env.LINKEDIN_PASSWORD });
 
