@@ -1,4 +1,5 @@
 const rlp = require('readline');
+const selectors = require('../selectors');
 
 const rl = rlp.createInterface({
   input: process.stdin,
@@ -16,15 +17,15 @@ async function login({ page, email, password }) {
   await page.goto('https://www.linkedin.com/', { waitUntil: 'load' });
 
   // Enter login credentials and submit the form
-  await page.type('#session_key', email);
-  await page.type('#session_password', password);
+  await page.type(selectors.emailInput, email);
+  await page.type(selectors.passwordInput, password);
 
-  await page.click('button[class*="sign-in-form__submit-btn"]');
+  await page.click(selectors.loginSubmit);
 
   // Wait for the login to complete
   await page.waitForNavigation({ waitUntil: 'load' });
 
-  const captcha = await page.$("#captcha-internal");
+  const captcha = await page.$(selectors.captcha);
 
   if(captcha) {
     await ask('Please solve the captcha and then press enter');
@@ -33,9 +34,7 @@ async function login({ page, email, password }) {
 
   console.log('Logged in to LinkedIn');
 
-  try {
-    await page.click('button[text()="Skip"]');
-  } catch { }
+  await page.click(selectors.skipButton).catch(() => {});
 }
 
 module.exports = login;
