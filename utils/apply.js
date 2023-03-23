@@ -25,7 +25,7 @@ async function uploadDocs(page, cvPath, coverLetterPath) {
 
     for (const docDiv of docDivs) {
         const label = await docDiv.$("label[class*='jobs-document-upload']");
-        const input = await docDiv.$("input[id*='easyApplyFormElement'][id*='jobApplicationFileUploadFormElement']");
+        const input = await docDiv.$("input[type='file'][id*='jobs-document-upload']");
         const text = await label.evaluate((el) => el.innerText.trim());
 
         if(text.includes("resume")) {
@@ -48,37 +48,6 @@ async function insertPhone(page, phone) {
 
 async function insertHomeCity(page, homeCity) {
     await changeTextInput(page, "input[id*='easyApplyFormElement'][id*='city-HOME-CITY']", homeCity);
-}
-
-async function insertLanguageProficiency(page, formData) {
-    const languageProficiency = JSON.parse(formData.languageProficiency);
-    const inputsByLabel = {};
-    const inputs = await page.$$(".jobs-easy-apply-modal select");
-
-    for (const input of inputs) {
-        const id = await input.evaluate(el => el.id);
-        const label = await page.$eval(`.jobs-easy-apply-modal label[for="${id}"]`, el => el.innerText);
-
-        inputsByLabel[label] = input;
-    }
-
-    for (const [language, level] of Object.entries(languageProficiency)) {
-        for (const [label, input] of Object.entries(inputsByLabel)) {
-            if(label.toLowerCase().includes(language.toLowerCase())) {
-                const option = await input.$$eval(`option`, (options, level) => {
-                    const option = options.find(option => option.value.toLowerCase() === level.toLowerCase());
-
-                    return option && option.value;
-                }, level);
-
-                if(option) {
-                    await input.select(option);
-                }
-
-                continue;
-            }
-        }
-    }
 }
 
 async function fillBoolean(page, booleans) {
@@ -189,8 +158,6 @@ async function fillFields(page, formData) {
 
     await uploadDocs(page, formData.cvPath, formData.coverLetterPath).catch(noop);
 
-    await insertLanguageProficiency(page, formData).catch(console.log);
-
     const textFields = {
         ...JSON.parse(formData.textFields),
         ...JSON.parse(formData.yearsOfExperience)
@@ -206,7 +173,12 @@ async function fillFields(page, formData) {
 
     await fillBoolean(page, booleans).catch(console.log);
 
-    await fillMultipleChoiceFields(page, JSON.parse(formData.multipleChoiceFields)).catch(console.log);
+    const multipleChoiceFields = {
+        ...JSON.parse(formData.languageProficiency),
+        ...JSON.parse(formData.multipleChoiceFields)
+    };
+
+    await fillMultipleChoiceFields(page, multipleChoiceFields).catch(console.log);
 }
 
 async function submit(page) {
