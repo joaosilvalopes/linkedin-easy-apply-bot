@@ -4,8 +4,9 @@
   "description": "",
   "main": "script.js",
   "scripts": {
-    "apply": "node ./apply.js",
-    "fetch-jobs": "node ./fetchJobs.js"
+    "start": "node ./scripts/apply.js",
+    "apply": "node ./scripts/apply.js",
+    "fetch-jobs": "node ./scripts/fetchJobs.js"
   },
   "author": "",
   "license": "ISC",

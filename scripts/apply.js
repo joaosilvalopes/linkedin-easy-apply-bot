@@ -1,10 +1,10 @@
 const puppeteer = require("puppeteer");
 const dotenv = require("dotenv");
 
-const wait = require("./utils/wait");
-const login = require("./utils/login");
-const apply = require("./utils/apply");
-const fetchJobLinksUser = require("./utils/fetchJobLinksUser");
+const wait = require("../utils/wait");
+const login = require("../login");
+const apply = require("../apply");
+const fetchJobLinksUser = require("../fetch/fetchJobLinksUser");
 
 dotenv.config();
 

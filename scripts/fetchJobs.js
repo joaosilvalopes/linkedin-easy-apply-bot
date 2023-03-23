@@ -1,8 +1,8 @@
 const puppeteer = require("puppeteer");
 const dotenv = require("dotenv");
 
-const wait = require("./utils/wait");
-const fetchJobLinksGuest = require("./utils/fetchJobLinksGuest");
+const wait = require("../utils/wait");
+const fetchJobLinksGuest = require("../fetch/fetchJobLinksGuest");
 
 dotenv.config();
 
@@ -20,7 +20,8 @@ dotenv.config();
     location: process.env.LOCATION,
     keywords: process.env.KEYWORDS,
     remote: process.env.REMOTE === "true",
-    easyApply: process.env.EASY_APPLY === "true"
+    easyApply: process.env.EASY_APPLY === "true",
+    jobTitle: process.env.JOB_TITLE,
   });
 
   console.log(links);

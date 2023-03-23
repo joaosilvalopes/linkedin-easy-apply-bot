@@ -1,4 +1,5 @@
-const wait = require("./wait");
+const wait = require("../utils/wait");
+const selectors = require('../selectors');
 
 /**
  * Fetches job links as a user (logged in)
@@ -11,26 +12,26 @@ async function fetchJobLinksUser({ page, location, keywords, remote, easyApply, 
 
   await page.goto(url, { waitUntil: "load" });
 
-  const numJobsHandle = await page.waitForSelector('small.jobs-search-results-list__text', { timeout: 5000 });
+  const numJobsHandle = await page.waitForSelector(selectors.searchResultListText, { timeout: 5000 });
   const numJobs = await numJobsHandle.evaluate((el) => parseInt(el.innerText.replace(',', '')));
-  const jobTitleRexExp = new RegExp(jobTitle, 'i');
+  const jobTitleRegExp = new RegExp(jobTitle, 'i');
 
-  while (i < 64) {
+  while (i < 1) {
     const url = `https://www.linkedin.com/jobs/search/?keywords=${keywords}&location=${location}&start=${i}${remote ? '&f_WRA=true' : ''}${easyApply ? '&f_AL=true' : ''}`;
 
     await page.goto(url, { waitUntil: "load" });
 
-    await page.waitForSelector('.jobs-search-results-list', { timeout: 5000 });
+    await page.waitForSelector(selectors.searchResultList, { timeout: 5000 });
 
-    const jobListings = await page.$$(".jobs-search-results-list li.jobs-search-results__list-item");
+    const jobListings = await page.$$(selectors.searchResultListItem);
 
     for (const job of jobListings) {
       try {
 
-        const linkHandle = await job.waitForSelector('a.job-card-list__title', { timeout: 10000 });
+        const linkHandle = await job.waitForSelector(selectors.searchResultListItemLink, { timeout: 10000 });
         const [link, title] = await linkHandle.evaluate((el) => [el.href.trim(), el.innerText.trim()]);
 
-        if (jobTitleRexExp.test(title)) {
+        if (jobTitleRegExp.test(title)) {
           jobs.push(link);
           console.log(jobs.length + ' ' + keywords + ' remote jobs in ' + location + ' loaded, job title: ' + title);
         }
