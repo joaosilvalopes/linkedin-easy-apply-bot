@@ -1,5 +1,6 @@
 module.exports = {
     easyApplyButtonEnabled: "button.jobs-apply-button:enabled",
+    jobDescription: "div.jobs-description-content > div.jobs-description-content__text > span",
 
     // Easy apply form
     checkbox: ".jobs-easy-apply-modal input[type='checkbox']",

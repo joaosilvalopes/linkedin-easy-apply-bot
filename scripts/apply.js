@@ -57,6 +57,7 @@ const askForPauseInput = async () => {
     remote: process.env.REMOTE === "true",
     easyApply: process.env.EASY_APPLY === "true",
     jobTitle: process.env.JOB_TITLE,
+    jobDescription: process.env.JOB_DESCRIPTION
   });
 
   for await (const link of linkGenerator) {
