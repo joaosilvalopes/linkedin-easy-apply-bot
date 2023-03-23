@@ -11,7 +11,7 @@ async function clickEasyApplyButton(page) {
     await page.click(selectors.easyApplyButtonEnabled);
 }
 
-async function apply({ page, link, formData }) {
+async function apply({ page, link, formData, shouldSubmit }) {
     await page.goto(link, { waitUntil: 'load', timeout: 60000 });
 
     try {
@@ -31,11 +31,9 @@ async function apply({ page, link, formData }) {
         await waitForNoError(page).catch(noop);
     }
 
-    try {
-        //await submit(page);
-
-        return;
-    } catch { }
+    if(shouldSubmit) {
+        await submit(page).catch(noop);
+    }
 }
 
 module.exports = apply;

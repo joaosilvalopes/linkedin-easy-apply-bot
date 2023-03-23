@@ -48,8 +48,9 @@ dotenv.config();
         requiresVisaSponsorship: process.env.REQUIRES_VISA_SPONSORSHIP === "true",
         booleans: process.env.BOOLEANS,
         textFields: process.env.TEXT_FIELDS,
-        multipleChoiceFields: process.env.MULTIPLE_CHOICE_FIELDS
-      }
+        multipleChoiceFields: process.env.MULTIPLE_CHOICE_FIELDS,
+      },
+      shouldSubmit: process.argv[2] === 'SUBMIT',
     });
     await wait(2000);
   }

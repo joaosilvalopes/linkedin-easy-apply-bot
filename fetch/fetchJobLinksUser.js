@@ -16,7 +16,7 @@ async function fetchJobLinksUser({ page, location, keywords, remote, easyApply, 
   const numJobs = await numJobsHandle.evaluate((el) => parseInt(el.innerText.replace(',', '')));
   const jobTitleRegExp = new RegExp(jobTitle, 'i');
 
-  while (i < 1) {
+  while (i < numJobs) {
     const url = `https://www.linkedin.com/jobs/search/?keywords=${keywords}&location=${location}&start=${i}${remote ? '&f_WRA=true' : ''}${easyApply ? '&f_AL=true' : ''}`;
 
     await page.goto(url, { waitUntil: "load" });

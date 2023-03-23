@@ -4,12 +4,12 @@ A tool designed to save you time when applying to linkedin jobs by applying to t
 
 To run this tool follow the following steps
 
-* First step, install the project's dependencies:
+### First step, install the project's dependencies:
 ```
 npm i
 ```
 
-* Second step, copy the sample configuration file to your environment and fill it with your information
+### Second step, copy the sample configuration file to your environment and fill it with your information
 ```
 cp sample.env .env
 ```
@@ -43,7 +43,13 @@ MULTIPLE_CHOICE_FIELDS=<an-object-with-the-regexes-as-keys-and-the-input-values-
 SINGLE_PAGE = <whether-you-want-the-applied-job-windows-to-close-after-applying(true/false)>
 ```
 
-* Third step, run the program
+### Third step, run the program
+
 ```
 npm run apply
+```
+
+To run the program without pressing the submit form button (for testing purposes)
+```
+npm run start
 ```
