@@ -2,6 +2,7 @@ const puppeteer = require("puppeteer");
 const dotenv = require("dotenv");
 
 const wait = require("../utils/wait");
+const { checkDotEnvExists } = require('../utils/dotenvHelper');
 const login = require("../login");
 const apply = require("../apply");
 const fetchJobLinksUser = require("../fetch/fetchJobLinksUser");
@@ -18,6 +19,13 @@ dotenv.config();
   let page = await context.newPage();
   const pages = await browser.pages();
   await pages[0].close();
+
+  try {
+    checkDotEnvExists();
+  } catch (e) {
+    console.error(e.message);
+    process.exit(1)
+  }
 
   await login({ page, email: process.env.LINKEDIN_EMAIL, password: process.env.LINKEDIN_PASSWORD });
 
