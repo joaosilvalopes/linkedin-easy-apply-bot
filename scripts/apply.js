@@ -3,11 +3,29 @@ const dotenv = require("dotenv");
 
 const wait = require("../utils/wait");
 const { checkDotEnvExists } = require('../utils/dotenvHelper');
+const ask = require("../utils/ask");
 const login = require("../login");
 const apply = require("../apply");
 const fetchJobLinksUser = require("../fetch/fetchJobLinksUser");
 
 dotenv.config();
+
+const state = {
+  paused: false
+};
+
+const askForPauseInput = async () => {
+  await ask('press enter to pause the program');
+
+  state.paused = true;
+
+  await ask('press enter to continue the program');
+
+  state.paused = false;
+  console.log('unpaused');
+
+  askForPauseInput();
+}
 
 (async () => {
   const browser = await puppeteer.launch({
@@ -29,7 +47,10 @@ dotenv.config();
 
   await login({ page, email: process.env.LINKEDIN_EMAIL, password: process.env.LINKEDIN_PASSWORD });
 
-  const links = await fetchJobLinksUser({
+  askForPauseInput();
+
+  const links = [];
+  const linkGenerator = fetchJobLinksUser({
     page,
     location: process.env.LOCATION,
     keywords: process.env.KEYWORDS,
@@ -38,11 +59,21 @@ dotenv.config();
     jobTitle: process.env.JOB_TITLE,
   });
 
+  for await (const link of linkGenerator) {
+    links.push(link);
+
+    while(state.paused) {
+      console.log('program paused, press enter to continue the program');
+      await wait(2000);
+    }
+  }
+
   console.log(links);
 
   for (const link of links) {
     if (process.env.SINGLE_PAGE !== "true")
       page = await context.newPage();
+
     await apply({
       page,
       link,
@@ -60,7 +91,13 @@ dotenv.config();
       },
       shouldSubmit: process.argv[2] === 'SUBMIT',
     });
+
     await wait(2000);
+
+    while(state.paused) {
+      console.log('program paused, press enter to continue the program');
+      await wait(2000);
+    }
   }
 
   // await browser.close();

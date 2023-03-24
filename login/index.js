@@ -1,16 +1,5 @@
-const rlp = require('readline');
+const ask = require('../utils/ask');
 const selectors = require('../selectors');
-
-const rl = rlp.createInterface({
-  input: process.stdin,
-  output: process.stdout
-});
-
-function ask(str) {
-  return new Promise(resolve => {
-    rl.question(str, resolve);
-  });
-}
 
 async function login({ page, email, password }) {
   // Navigate to LinkedIn
