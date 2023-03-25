@@ -1,5 +1,4 @@
 const selectors = require('../selectors');
-const submit = require('../apply-form/submit');
 const fillFields = require('../apply-form/fillFields');
 const waitForNoError = require('../apply-form/waitForNoError');
 const clickNextButton = require('../apply-form/clickNextButton');
@@ -31,8 +30,14 @@ async function apply({ page, link, formData, shouldSubmit }) {
         await waitForNoError(page).catch(noop);
     }
 
+    const submitButton = await page.$(selectors.submit);
+
+    if(!submitButton) {
+        throw 'error';
+    }
+
     if(shouldSubmit) {
-        await submit(page).catch(noop);
+        await submitButton.click();
     }
 }
 

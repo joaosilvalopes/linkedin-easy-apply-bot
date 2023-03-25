@@ -1,6 +1,5 @@
 module.exports = {
     easyApplyButtonEnabled: "button.jobs-apply-button:enabled",
-    jobDescription: "div.jobs-description-content > div.jobs-description-content__text > span",
 
     // Easy apply form
     checkbox: ".jobs-easy-apply-modal input[type='checkbox']",
@@ -30,6 +29,8 @@ module.exports = {
     searchResultListText: "small.jobs-search-results-list__text",
     searchResultListItem: ".jobs-search-results-list li.jobs-search-results__list-item",
     searchResultListItemLink: "a.job-card-list__title",
+    searchResultListItemCompanyName: "div.job-card-container__company-name",
+    jobDescription: "div.jobs-description-content > div.jobs-description-content__text > span",
 
     // fetch guest
     jobCount: ".results-context-header__job-count",
