@@ -22,7 +22,7 @@ async function* fetchJobLinksUser({ page, location, keywords, remote, easyApply,
   while (numSeenJobs < numAvailableJobs) {
     const url = `https://www.linkedin.com/jobs/search/?keywords=${keywords}&location=${location}&start=${numSeenJobs}&count=${PAGE_SIZE}${remote ? '&f_WRA=true' : ''}${easyApply ? '&f_AL=true' : ''}`;
 
-    await page.goto(url, { waitUntil: "load" });
+    numSeenJobs > 0 && await page.goto(url, { waitUntil: "load" });
 
     await page.waitForSelector(`${selectors.searchResultListItem}:nth-child(${Math.min(PAGE_SIZE, numAvailableJobs - numSeenJobs)})`, { timeout: 5000 });
 
@@ -42,13 +42,13 @@ async function* fetchJobLinksUser({ page, location, keywords, remote, easyApply,
           return hasLoaded;
         }, {}, selectors.jobDescription);
 
+        const companyName = await page.$eval(`${selectors.searchResultListItem}:nth-child(${i + 1}) ${selectors.searchResultListItemCompanyName}`, el => el.innerText);
         const jobDescription = await page.$eval(selectors.jobDescription, el => el.innerText);
 
         if (jobTitleRegExp.test(title) && jobDescriptionRegExp.test(jobDescription)) {
           numMatchingJobs++;
-          console.log(numMatchingJobs + ' ' + keywords + ' remote jobs in ' + location + ' loaded, job title: ' + title);
 
-          yield link;
+          yield [link, title, companyName];
         }
       } catch(e) {
         console.log(e);

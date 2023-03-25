@@ -34,24 +34,25 @@ const askForPauseInput = async () => {
     args: ["--disable-setuid-sandbox", "--no-sandbox",]
   });
   const context = await browser.createIncognitoBrowserContext();
-  let page = await context.newPage();
+  const listingPage = await context.newPage();
+
   const pages = await browser.pages();
+
   await pages[0].close();
 
   try {
     checkDotEnvExists();
   } catch (e) {
     console.error(e.message);
-    process.exit(1)
+    process.exit(1);
   }
 
-  await login({ page, email: process.env.LINKEDIN_EMAIL, password: process.env.LINKEDIN_PASSWORD });
+  await login({ page: listingPage, email: process.env.LINKEDIN_EMAIL, password: process.env.LINKEDIN_PASSWORD });
 
   askForPauseInput();
 
-  const links = [];
   const linkGenerator = fetchJobLinksUser({
-    page,
+    page: listingPage,
     location: process.env.LOCATION,
     keywords: process.env.KEYWORDS,
     remote: process.env.REMOTE === "true",
@@ -60,40 +61,39 @@ const askForPauseInput = async () => {
     jobDescription: process.env.JOB_DESCRIPTION
   });
 
-  for await (const link of linkGenerator) {
-    links.push(link);
+  let applicationPage;
 
-    while(state.paused) {
-      console.log('program paused, press enter to continue the program');
-      await wait(2000);
+  for await (const [link, title, companyName] of linkGenerator) {
+    if (!applicationPage || process.env.SINGLE_PAGE !== "true")
+      applicationPage = await context.newPage();
+
+    await applicationPage.bringToFront();
+
+    try {
+      await apply({
+        page: applicationPage,
+        link,
+        formData: {
+          phone: process.env.PHONE,
+          cvPath: process.env.CV_PATH,
+          homeCity: process.env.HOME_CITY,
+          coverLetterPath: process.env.COVER_LETTER_PATH,
+          yearsOfExperience: process.env.YEARS_OF_EXPERIENCE,
+          languageProficiency: process.env.LANGUAGE_PROFICIENCY,
+          requiresVisaSponsorship: process.env.REQUIRES_VISA_SPONSORSHIP === "true",
+          booleans: process.env.BOOLEANS,
+          textFields: process.env.TEXT_FIELDS,
+          multipleChoiceFields: process.env.MULTIPLE_CHOICE_FIELDS,
+        },
+        shouldSubmit: process.argv[2] === 'SUBMIT',
+      });
+
+      console.log(`Applied to ${title} at ${companyName}`);
+    } catch {
+      console.log(`Error applying to ${title} at ${companyName}`);
     }
-  }
 
-  console.log(links);
-
-  for (const link of links) {
-    if (process.env.SINGLE_PAGE !== "true")
-      page = await context.newPage();
-
-    await apply({
-      page,
-      link,
-      formData: {
-        phone: process.env.PHONE,
-        cvPath: process.env.CV_PATH,
-        homeCity: process.env.HOME_CITY,
-        coverLetterPath: process.env.COVER_LETTER_PATH,
-        yearsOfExperience: process.env.YEARS_OF_EXPERIENCE,
-        languageProficiency: process.env.LANGUAGE_PROFICIENCY,
-        requiresVisaSponsorship: process.env.REQUIRES_VISA_SPONSORSHIP === "true",
-        booleans: process.env.BOOLEANS,
-        textFields: process.env.TEXT_FIELDS,
-        multipleChoiceFields: process.env.MULTIPLE_CHOICE_FIELDS,
-      },
-      shouldSubmit: process.argv[2] === 'SUBMIT',
-    });
-
-    await wait(2000);
+    await listingPage.bringToFront();
 
     while(state.paused) {
       console.log('program paused, press enter to continue the program');
