@@ -6,7 +6,7 @@ const PAGE_SIZE = 7;
 /**
  * Fetches job links as a user (logged in)
  */
-async function* fetchJobLinksUser({ page, location, keywords, remote, easyApply, jobTitle }) {
+async function* fetchJobLinksUser({ page, location, keywords, remote, easyApply, jobTitle, jobDescription }) {
   let numSeenJobs = 0;
   let numMatchingJobs = 0;
 
@@ -17,6 +17,7 @@ async function* fetchJobLinksUser({ page, location, keywords, remote, easyApply,
   const numJobsHandle = await page.waitForSelector(selectors.searchResultListText, { timeout: 5000 });
   const numAvailableJobs = await numJobsHandle.evaluate((el) => parseInt(el.innerText.replace(',', '')));
   const jobTitleRegExp = new RegExp(jobTitle, 'i');
+  const jobDescriptionRegExp = new RegExp(jobDescription, 'i');
 
   while (numSeenJobs < numAvailableJobs) {
     const url = `https://www.linkedin.com/jobs/search/?keywords=${keywords}&location=${location}&start=${numSeenJobs}&count=${PAGE_SIZE}${remote ? '&f_WRA=true' : ''}${easyApply ? '&f_AL=true' : ''}`;
@@ -27,12 +28,23 @@ async function* fetchJobLinksUser({ page, location, keywords, remote, easyApply,
 
     const jobListings = await page.$$(selectors.searchResultListItem);
 
-    for (const job of jobListings) {
+    for (let i = 0; i < jobListings.length; i++) {
       try {
-        const linkHandle = await job.waitForSelector(selectors.searchResultListItemLink, { timeout: 10000 });
+        const linkHandle = await page.$(`${selectors.searchResultListItem}:nth-child(${i + 1}) ${selectors.searchResultListItemLink}`);
+
+        await linkHandle.click();
+
         const [link, title] = await linkHandle.evaluate((el) => [el.href.trim(), el.innerText.trim()]);
 
-        if (jobTitleRegExp.test(title)) {
+        await page.waitForFunction(async (jobDescriptionSelector) => {
+          const hasLoaded = !!document.querySelector(jobDescriptionSelector).innerText.trim();
+
+          return hasLoaded;
+        }, {}, selectors.jobDescription);
+
+        const jobDescription = await page.$eval(selectors.jobDescription, el => el.innerText);
+
+        if (jobTitleRegExp.test(title) && jobDescriptionRegExp.test(jobDescription)) {
           numMatchingJobs++;
           console.log(numMatchingJobs + ' ' + keywords + ' remote jobs in ' + location + ' loaded, job title: ' + title);
 
