@@ -32,9 +32,9 @@ async function* fetchJobLinksUser({ page, location, keywords, remote, easyApply,
       try {
         const linkHandle = await page.$(`${selectors.searchResultListItem}:nth-child(${i + 1}) ${selectors.searchResultListItemLink}`);
 
-        const [link, title] = await linkHandle.evaluate((el) => [el.href.trim(), el.innerText.trim()]);
-
         await linkHandle.click();
+
+        const [link, title] = await linkHandle.evaluate((el) => [el.href.trim(), el.innerText.trim()]);
 
         await page.waitForFunction(async (selectors) => {
           const hasLoadedDescription = !!document.querySelector(selectors.jobDescription).innerText.trim();
