@@ -1,4 +1,4 @@
-module.exports = {
+export default {
     easyApplyButtonEnabled: "button.jobs-apply-button:enabled",
 
     // Easy apply form
@@ -23,7 +23,7 @@ module.exports = {
     passwordInput: "#session_password",
     loginSubmit: "button[class*='sign-in-form__submit-btn']",
     skipButton: "button[text()='Skip']",
-    
+
     // fetch user
     searchResultList: ".jobs-search-results-list",
     searchResultListText: "small.jobs-search-results-list__text",
