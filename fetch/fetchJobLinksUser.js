@@ -32,20 +32,22 @@ async function* fetchJobLinksUser({ page, location, keywords, remote, easyApply,
       try {
         const linkHandle = await page.$(`${selectors.searchResultListItem}:nth-child(${i + 1}) ${selectors.searchResultListItemLink}`);
 
-        await linkHandle.click();
-
         const [link, title] = await linkHandle.evaluate((el) => [el.href.trim(), el.innerText.trim()]);
 
-        await page.waitForFunction(async (jobDescriptionSelector) => {
-          const hasLoaded = !!document.querySelector(jobDescriptionSelector).innerText.trim();
+        await linkHandle.click();
 
-          return hasLoaded;
-        }, {}, selectors.jobDescription);
+        await page.waitForFunction(async (selectors) => {
+          const hasLoadedDescription = !!document.querySelector(selectors.jobDescription).innerText.trim();
+          const hasLoadedStatus = !!(document.querySelector(selectors.easyApplyButtonEnabled) || document.querySelector(selectors.appliedToJobFeedback));
+
+          return hasLoadedStatus && hasLoadedDescription;
+        }, {}, selectors);
 
         const companyName = await page.$eval(`${selectors.searchResultListItem}:nth-child(${i + 1}) ${selectors.searchResultListItemCompanyName}`, el => el.innerText).catch(() => 'Unknown');
         const jobDescription = await page.$eval(selectors.jobDescription, el => el.innerText);
+        const canApply = !!(await page.$(selectors.easyApplyButtonEnabled));
 
-        if (jobTitleRegExp.test(title) && jobDescriptionRegExp.test(jobDescription)) {
+        if (canApply && jobTitleRegExp.test(title) && jobDescriptionRegExp.test(jobDescription)) {
           numMatchingJobs++;
 
           yield [link, title, companyName];

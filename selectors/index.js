@@ -31,6 +31,7 @@ module.exports = {
     searchResultListItemLink: "a.job-card-list__title",
     searchResultListItemCompanyName: "div.job-card-container__company-name",
     jobDescription: "div.jobs-description-content > div.jobs-description-content__text > span",
+    appliedToJobFeedback: ".artdeco-inline-feedback",
 
     // fetch guest
     jobCount: ".results-context-header__job-count",
