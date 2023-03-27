@@ -1,13 +1,10 @@
 import puppeteer, { Page } from "puppeteer";
-import dotenv from "dotenv";
+import config from "../config";
 
-import checkDotEnvExists from "../utils/checkDotEnvExists";
 import ask from "../utils/ask";
 import login from "../login";
 import apply, { ApplicationFormData } from "../apply";
 import fetchJobLinksUser from "../fetch/fetchJobLinksUser";
-
-dotenv.config();
 
 interface AppState {
   paused: boolean;
@@ -45,25 +42,21 @@ const askForPauseInput = async () => {
 
   await pages[0].close();
 
-  try {
-    checkDotEnvExists();
-  } catch (e) {
-    console.error(e);
-    process.exit(1);
-  }
-
-  await login({ page: listingPage, email: process.env.LINKEDIN_EMAIL || "", password: process.env.LINKEDIN_PASSWORD || "" });
+  await login({
+    page: listingPage,
+    email: config.LINKEDIN_EMAIL,
+    password: config.LINKEDIN_PASSWORD
+  });
 
   askForPauseInput();
 
   const linkGenerator = fetchJobLinksUser({
     page: listingPage,
-    location: process.env.LOCATION || "",
-    keywords: process.env.KEYWORDS || "",
-    remote: process.env.REMOTE === "true",
-    easyApply: process.env.EASY_APPLY === "true",
-    jobTitle: process.env.JOB_TITLE || "",
-    jobDescription: process.env.JOB_DESCRIPTION || ""
+    location: config.LOCATION,
+    keywords: config.KEYWORDS,
+    remote: config.REMOTE,
+    jobTitle: config.JOB_TITLE,
+    jobDescription: config.JOB_DESCRIPTION
   });
 
   let applicationPage: Page | null = null;
@@ -76,16 +69,16 @@ const askForPauseInput = async () => {
 
     try {
       const formData: ApplicationFormData = {
-        phone: process.env.PHONE || "",
-        cvPath: process.env.CV_PATH || "",
-        homeCity: process.env.HOME_CITY || "",
-        coverLetterPath: process.env.COVER_LETTER_PATH || "",
-        yearsOfExperience: process.env.YEARS_OF_EXPERIENCE || "",
-        languageProficiency: process.env.LANGUAGE_PROFICIENCY || "",
-        requiresVisaSponsorship: process.env.REQUIRES_VISA_SPONSORSHIP === "true",
-        booleans: process.env.BOOLEANS || "",
-        textFields: process.env.TEXT_FIELDS || "",
-        multipleChoiceFields: process.env.MULTIPLE_CHOICE_FIELDS || "",
+        phone: config.PHONE,
+        cvPath: config.CV_PATH,
+        homeCity: config.HOME_CITY,
+        coverLetterPath: config.COVER_LETTER_PATH,
+        yearsOfExperience: config.YEARS_OF_EXPERIENCE,
+        languageProficiency: config.LANGUAGE_PROFICIENCY,
+        requiresVisaSponsorship: config.REQUIRES_VISA_SPONSORSHIP,
+        booleans: config.BOOLEANS,
+        textFields: config.TEXT_FIELDS,
+        multipleChoiceFields: config.MULTIPLE_CHOICE_FIELDS,
       };
 
       await apply({
@@ -102,7 +95,7 @@ const askForPauseInput = async () => {
 
     await listingPage.bringToFront();
 
-    while(state.paused) {
+    while (state.paused) {
       console.log("program paused, press enter to continue the program");
       await wait(2000);
     }

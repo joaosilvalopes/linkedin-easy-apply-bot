@@ -8,7 +8,7 @@ import insertPhone from './insertPhone';
 import uploadDocs from './uploadDocs';
 import { ApplicationFormData } from '../apply';
 
-const noop = () => {};
+const noop = () => { };
 
 async function fillFields(page: Page, formData: ApplicationFormData): Promise<void> {
   await insertHomeCity(page, formData.homeCity).catch(noop);
@@ -18,19 +18,13 @@ async function fillFields(page: Page, formData: ApplicationFormData): Promise<vo
   await uploadDocs(page, formData.cvPath, formData.coverLetterPath).catch(noop);
 
   const textFields = {
-    ...JSON.parse(formData.textFields),
-    ...JSON.parse(formData.yearsOfExperience),
+    ...formData.textFields,
+    ...formData.yearsOfExperience,
   };
 
   await fillTextFields(page, textFields).catch(console.log);
 
-  const booleans: { [key: string]: boolean } = Object.entries(JSON.parse(formData.booleans)).reduce(
-    (acc, [key, value]) => ({
-      ...acc,
-      [key]: value === 'true',
-    }),
-    {}
-  );
+  const booleans = formData.booleans;
 
   booleans['sponsorship'] = formData.requiresVisaSponsorship;
 
@@ -39,8 +33,8 @@ async function fillFields(page: Page, formData: ApplicationFormData): Promise<vo
   await fillBoolean(page, booleans).catch(console.log);
 
   const multipleChoiceFields = {
-    ...JSON.parse(formData.languageProficiency),
-    ...JSON.parse(formData.multipleChoiceFields),
+    ...formData.languageProficiency,
+    ...formData.multipleChoiceFields,
   };
 
   await fillMultipleChoiceFields(page, multipleChoiceFields).catch(console.log);
