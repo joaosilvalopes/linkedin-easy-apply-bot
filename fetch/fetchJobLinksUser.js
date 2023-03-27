@@ -36,16 +36,18 @@ async function* fetchJobLinksUser({ page, location, keywords, remote, easyApply,
 
         const [link, title] = await linkHandle.evaluate((el) => [el.href.trim(), el.innerText.trim()]);
 
-        await page.waitForFunction(async (jobDescriptionSelector) => {
-          const hasLoaded = !!document.querySelector(jobDescriptionSelector).innerText.trim();
+        await page.waitForFunction(async (selectors) => {
+          const hasLoadedDescription = !!document.querySelector(selectors.jobDescription).innerText.trim();
+          const hasLoadedStatus = !!(document.querySelector(selectors.easyApplyButtonEnabled) || document.querySelector(selectors.appliedToJobFeedback));
 
-          return hasLoaded;
-        }, {}, selectors.jobDescription);
+          return hasLoadedStatus && hasLoadedDescription;
+        }, {}, selectors);
 
         const companyName = await page.$eval(`${selectors.searchResultListItem}:nth-child(${i + 1}) ${selectors.searchResultListItemCompanyName}`, el => el.innerText).catch(() => 'Unknown');
         const jobDescription = await page.$eval(selectors.jobDescription, el => el.innerText);
+        const canApply = !!(await page.$(selectors.easyApplyButtonEnabled));
 
-        if (jobTitleRegExp.test(title) && jobDescriptionRegExp.test(jobDescription)) {
+        if (canApply && jobTitleRegExp.test(title) && jobDescriptionRegExp.test(jobDescription)) {
           numMatchingJobs++;
 
           yield [link, title, companyName];
