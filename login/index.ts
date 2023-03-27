@@ -1,7 +1,15 @@
-const ask = require('../utils/ask');
-const selectors = require('../selectors');
+import { Page } from 'puppeteer';
 
-async function login({ page, email, password }) {
+import ask from '../utils/ask';
+import selectors from '../selectors';
+
+interface Params {
+  page: Page;
+  email: string;
+  password: string;
+}
+
+async function login({ page, email, password }: Params): Promise<void> {
   // Navigate to LinkedIn
   await page.goto('https://www.linkedin.com/', { waitUntil: 'load' });
 
@@ -16,14 +24,14 @@ async function login({ page, email, password }) {
 
   const captcha = await page.$(selectors.captcha);
 
-  if(captcha) {
+  if (captcha) {
     await ask('Please solve the captcha and then press enter');
     await page.goto('https://www.linkedin.com/', { waitUntil: 'load' });
   }
 
   console.log('Logged in to LinkedIn');
 
-  await page.click(selectors.skipButton).catch(() => {});
+  await page.click(selectors.skipButton).catch(() => { });
 }
 
-module.exports = login;
+export default login;

@@ -1,12 +1,14 @@
-const wait = require("../utils/wait");
-const selectors = require('../selectors');
+import { ElementHandle, Page } from 'puppeteer';
+
+import wait from '../utils/wait';
+import selectors from '../selectors';
 
 const PAGE_SIZE = 7;
 
 /**
  * Fetches job links as a user (logged in)
  */
-async function* fetchJobLinksUser({ page, location, keywords, remote, easyApply, jobTitle, jobDescription }) {
+async function* fetchJobLinksUser({ page, location, keywords, remote, easyApply, jobTitle, jobDescription }: { page: Page, location: string, keywords: string, remote: boolean, easyApply: boolean, jobTitle: string, jobDescription: string }): AsyncGenerator<[string, string, string]> {
   let numSeenJobs = 0;
   let numMatchingJobs = 0;
 
@@ -14,8 +16,8 @@ async function* fetchJobLinksUser({ page, location, keywords, remote, easyApply,
 
   await page.goto(url, { waitUntil: "load" });
 
-  const numJobsHandle = await page.waitForSelector(selectors.searchResultListText, { timeout: 5000 });
-  const numAvailableJobs = await numJobsHandle.evaluate((el) => parseInt(el.innerText.replace(',', '')));
+  const numJobsHandle = await page.waitForSelector(selectors.searchResultListText, { timeout: 5000 }) as ElementHandle<HTMLElement>;
+  const numAvailableJobs = await numJobsHandle.evaluate((el) => parseInt((el as HTMLElement).innerText.replace(',', '')));
   const jobTitleRegExp = new RegExp(jobTitle, 'i');
   const jobDescriptionRegExp = new RegExp(jobDescription, 'i');
 
@@ -30,21 +32,21 @@ async function* fetchJobLinksUser({ page, location, keywords, remote, easyApply,
 
     for (let i = 0; i < jobListings.length; i++) {
       try {
-        const linkHandle = await page.$(`${selectors.searchResultListItem}:nth-child(${i + 1}) ${selectors.searchResultListItemLink}`);
+        const linkHandle = await page.$(`${selectors.searchResultListItem}:nth-child(${i + 1}) ${selectors.searchResultListItemLink}`) as ElementHandle<HTMLLinkElement>;
 
         await linkHandle.click();
 
         const [link, title] = await linkHandle.evaluate((el) => [el.href.trim(), el.innerText.trim()]);
 
         await page.waitForFunction(async (selectors) => {
-          const hasLoadedDescription = !!document.querySelector(selectors.jobDescription).innerText.trim();
+          const hasLoadedDescription = !!document.querySelector<HTMLElement>(selectors.jobDescription)?.innerText.trim();
           const hasLoadedStatus = !!(document.querySelector(selectors.easyApplyButtonEnabled) || document.querySelector(selectors.appliedToJobFeedback));
 
           return hasLoadedStatus && hasLoadedDescription;
         }, {}, selectors);
 
-        const companyName = await page.$eval(`${selectors.searchResultListItem}:nth-child(${i + 1}) ${selectors.searchResultListItemCompanyName}`, el => el.innerText).catch(() => 'Unknown');
-        const jobDescription = await page.$eval(selectors.jobDescription, el => el.innerText);
+        const companyName = await page.$eval(`${selectors.searchResultListItem}:nth-child(${i + 1}) ${selectors.searchResultListItemCompanyName}`, el => (el as HTMLElement).innerText).catch(() => 'Unknown');;
+        const jobDescription = await page.$eval(selectors.jobDescription, el => (el as HTMLElement).innerText);
         const canApply = !!(await page.$(selectors.easyApplyButtonEnabled));
 
         if (canApply && jobTitleRegExp.test(title) && jobDescriptionRegExp.test(jobDescription)) {
@@ -63,4 +65,4 @@ async function* fetchJobLinksUser({ page, location, keywords, remote, easyApply,
   }
 }
 
-module.exports = fetchJobLinksUser;
+export default fetchJobLinksUser;
