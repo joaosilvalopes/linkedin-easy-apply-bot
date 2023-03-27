@@ -1,66 +1,112 @@
-import { Page } from 'puppeteer';
+import puppeteer, { Page } from "puppeteer";
+import dotenv from "dotenv";
 
-import selectors from '../selectors';
-import fillFields from '../apply-form/fillFields';
-import waitForNoError from '../apply-form/waitForNoError';
-import clickNextButton from '../apply-form/clickNextButton';
+import checkDotEnvExists from "../utils/checkDotEnvExists";
+import ask from "../utils/ask";
+import login from "./login";
+import apply, { ApplicationFormData } from "./apply";
+import fetchJobLinksUser from "./fetchJobLinksUser";
 
-const noop = () => { };
+dotenv.config();
 
-async function clickEasyApplyButton(page: Page): Promise<void> {
-    await page.waitForSelector(selectors.easyApplyButtonEnabled, { timeout: 10000 });
-    await page.click(selectors.easyApplyButtonEnabled);
+interface AppState {
+  paused: boolean;
 }
 
-export interface ApplicationFormData {
-    phone: string;
-    cvPath: string;
-    homeCity: string;
-    coverLetterPath: string;
-    yearsOfExperience: string;
-    languageProficiency: string;
-    requiresVisaSponsorship: boolean;
-    booleans: string;
-    textFields: string;
-    multipleChoiceFields: string;
-}
+const wait = (time: number) => new Promise((resolve) => setTimeout(resolve, time));
 
-interface Params {
-    page: Page;
-    link: string;
-    formData: ApplicationFormData;
-    shouldSubmit: boolean;
-}
+const state: AppState = {
+  paused: false,
+};
 
-async function apply({ page, link, formData, shouldSubmit }: Params): Promise<void> {
-    await page.goto(link, { waitUntil: 'load', timeout: 60000 });
+const askForPauseInput = async () => {
+  await ask("press enter to pause the program");
+
+  state.paused = true;
+
+  await ask("press enter to continue the program");
+
+  state.paused = false;
+  console.log("unpaused");
+
+  askForPauseInput();
+};
+
+(async () => {
+  const browser = await puppeteer.launch({
+    headless: false,
+    ignoreHTTPSErrors: true,
+    args: ["--disable-setuid-sandbox", "--no-sandbox",]
+  });
+  const context = await browser.createIncognitoBrowserContext();
+  const listingPage = await context.newPage();
+
+  const pages = await browser.pages();
+
+  await pages[0].close();
+
+  try {
+    checkDotEnvExists();
+  } catch (e) {
+    console.error(e);
+    process.exit(1);
+  }
+
+  await login({ page: listingPage, email: process.env.LINKEDIN_EMAIL || "", password: process.env.LINKEDIN_PASSWORD || "" });
+
+  askForPauseInput();
+
+  const linkGenerator = fetchJobLinksUser({
+    page: listingPage,
+    location: process.env.LOCATION || "",
+    keywords: process.env.KEYWORDS || "",
+    remote: process.env.REMOTE === "true",
+    easyApply: process.env.EASY_APPLY === "true",
+    jobTitle: process.env.JOB_TITLE || "",
+    jobDescription: process.env.JOB_DESCRIPTION || ""
+  });
+
+  let applicationPage: Page | null = null;
+
+  for await (const [link, title, companyName] of linkGenerator) {
+    if (!applicationPage || process.env.SINGLE_PAGE !== "true")
+      applicationPage = await context.newPage();
+
+    await applicationPage.bringToFront();
 
     try {
-        await clickEasyApplyButton(page);
+      const formData: ApplicationFormData = {
+        phone: process.env.PHONE || "",
+        cvPath: process.env.CV_PATH || "",
+        homeCity: process.env.HOME_CITY || "",
+        coverLetterPath: process.env.COVER_LETTER_PATH || "",
+        yearsOfExperience: process.env.YEARS_OF_EXPERIENCE || "",
+        languageProficiency: process.env.LANGUAGE_PROFICIENCY || "",
+        requiresVisaSponsorship: process.env.REQUIRES_VISA_SPONSORSHIP === "true",
+        booleans: process.env.BOOLEANS || "",
+        textFields: process.env.TEXT_FIELDS || "",
+        multipleChoiceFields: process.env.MULTIPLE_CHOICE_FIELDS || "",
+      };
+
+      await apply({
+        page: applicationPage,
+        link,
+        formData,
+        shouldSubmit: process.argv[2] === "SUBMIT",
+      });
+
+      console.log(`Applied to ${title} at ${companyName}`);
     } catch {
-        console.log(`Easy apply button not found in posting: ${link}`);
-        return;
+      console.log(`Error applying to ${title} at ${companyName}`);
     }
 
-    let maxPages = 5;
+    await listingPage.bringToFront();
 
-    while (maxPages--) {
-        await fillFields(page, formData).catch(noop);
-
-        await clickNextButton(page).catch(noop);
-
-        await waitForNoError(page).catch(noop);
+    while(state.paused) {
+      console.log("program paused, press enter to continue the program");
+      await wait(2000);
     }
+  }
 
-    const submitButton = await page.$(selectors.submit);
-
-    if (!submitButton) {
-        throw new Error('Submit button not found');
-    }
-
-    if (shouldSubmit) {
-        await submitButton.click();
-    }
-}
-
-export default apply;
+  // await browser.close();
+})();

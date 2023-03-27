@@ -1,6 +1,6 @@
 import { ElementHandle, Page } from 'puppeteer';
 
-import selectors from '../selectors';
+import selectors from '../../selectors';
 
 async function uploadDocs(page: Page, cvPath: string, coverLetterPath: string): Promise<void> {
   const docDivs = await page.$$(selectors.documentUpload);

@@ -1,6 +1,6 @@
 import { Page } from 'puppeteer';
 
-import selectors from '../selectors';
+import selectors from '../../selectors';
 
 async function clickNextButton(page: Page): Promise<void> {
     await page.click(selectors.nextButton);

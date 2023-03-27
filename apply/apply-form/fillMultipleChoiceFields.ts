@@ -1,5 +1,5 @@
 import { Page } from 'puppeteer';
-import selectors from '../selectors';
+import selectors from '../../selectors';
 
 interface MultipleChoiceFields {
   [labelRegex: string]: string;
@@ -10,6 +10,8 @@ async function fillMultipleChoiceFields(page: Page, multipleChoiceFields: Multip
 
   for (const select of selects) {
     const id = await select.evaluate((el) => el.id);
+    console.log(id);
+
     const label = await page.$eval(`label[for="${id}"]`, (el) => el.innerText);
 
     for (const [labelRegex, value] of Object.entries(multipleChoiceFields)) {

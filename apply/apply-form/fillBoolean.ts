@@ -1,6 +1,6 @@
 import { ElementHandle, Page } from 'puppeteer';
 
-import selectors from '../selectors';
+import selectors from '../../selectors';
 
 async function fillBoolean(page: Page, booleans: { [key: string]: boolean }): Promise<void> {
   const fieldsets = await page.$$(selectors.fieldset);

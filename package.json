@@ -4,9 +4,9 @@
   "description": "",
   "main": "./scripts/apply.ts",
   "scripts": {
-    "start": "ts-node ./scripts/apply.ts",
-    "apply": "ts-node ./scripts/apply.ts SUBMIT",
-    "fetch-jobs": "ts-node ./scripts/fetchJobs.ts"
+    "start": "ts-node ./apply/index.ts",
+    "apply": "ts-node ./apply/index.ts SUBMIT",
+    "fetch-jobs": "ts-node ./fetch-jobs/index.ts"
   },
   "author": "",
   "license": "ISC",

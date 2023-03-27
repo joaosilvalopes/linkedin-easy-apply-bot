@@ -1,6 +1,6 @@
 import { Page } from 'puppeteer';
 
-import selectors from '../selectors';
+import selectors from '../../selectors';
 import changeTextInput from './changeTextInput';
 
 interface TextFields {

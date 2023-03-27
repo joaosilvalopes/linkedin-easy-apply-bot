@@ -2,7 +2,7 @@ import puppeteer from 'puppeteer';
 import dotenv from 'dotenv';
 
 import checkDotEnvExists from '../utils/checkDotEnvExists';
-import fetchJobLinksGuest from '../fetch/fetchJobLinksGuest';
+import fetchJobLinksGuest from './fetchJobLinksGuest';
 
 dotenv.config();
 
