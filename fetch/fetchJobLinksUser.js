@@ -42,7 +42,7 @@ async function* fetchJobLinksUser({ page, location, keywords, remote, easyApply,
           return hasLoaded;
         }, {}, selectors.jobDescription);
 
-        const companyName = await page.$eval(`${selectors.searchResultListItem}:nth-child(${i + 1}) ${selectors.searchResultListItemCompanyName}`, el => el.innerText);
+        const companyName = await page.$eval(`${selectors.searchResultListItem}:nth-child(${i + 1}) ${selectors.searchResultListItemCompanyName}`, el => el.innerText).catch(() => 'Unknown');
         const jobDescription = await page.$eval(selectors.jobDescription, el => el.innerText);
 
         if (jobTitleRegExp.test(title) && jobDescriptionRegExp.test(jobDescription)) {
