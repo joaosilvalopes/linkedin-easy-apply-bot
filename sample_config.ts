@@ -11,6 +11,7 @@ export default {
   HYBRID: true,
   JOB_TITLE: "(javascript|frontend|front-end|fullstack|full-stack|nodejs|node|js).*(developer|engineer)",
   JOB_DESCRIPTION: "^((?!(primeit))(.|[\n\r]))*$",
+  JOB_DESCRIPTION_LANGUAGES: ["portuguese", "english"],
 
   // FORM DATA
   PHONE: "912345678",

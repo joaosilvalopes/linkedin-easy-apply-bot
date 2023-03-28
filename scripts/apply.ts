@@ -54,11 +54,14 @@ const askForPauseInput = async () => {
     page: listingPage,
     location: config.LOCATION,
     keywords: config.KEYWORDS,
-    remote: config.REMOTE,
-    onSite: config.ON_SITE,
-    hybrid: config.HYBRID,
+    workplace: {
+      remote: config.WORKPLACE.REMOTE,
+      onSite: config.WORKPLACE.ON_SITE,
+      hybrid: config.WORKPLACE.HYBRID,
+    },
     jobTitle: config.JOB_TITLE,
-    jobDescription: config.JOB_DESCRIPTION
+    jobDescription: config.JOB_DESCRIPTION,
+    jobDescriptionLanguages: config.JOB_DESCRIPTION_LANGUAGES
   });
 
   let applicationPage: Page | null = null;
