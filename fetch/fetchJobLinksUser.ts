@@ -8,11 +8,12 @@ const PAGE_SIZE = 7;
 /**
  * Fetches job links as a user (logged in)
  */
-async function* fetchJobLinksUser({ page, location, keywords, remote, jobTitle, jobDescription }: { page: Page, location: string, keywords: string, remote: boolean, jobTitle: string, jobDescription: string }): AsyncGenerator<[string, string, string]> {
+async function* fetchJobLinksUser({ page, location, keywords, remote, onSite, hybrid, jobTitle, jobDescription }: { page: Page, location: string, keywords: string, remote: boolean, onSite: boolean, hybrid: boolean, jobTitle: string, jobDescription: string }): AsyncGenerator<[string, string, string]> {
   let numSeenJobs = 0;
   let numMatchingJobs = 0;
+  const fWt = [onSite,remote,hybrid].reduce((acc, c, i) => c ? [ ...acc, i + 1 ] : acc, [] as number[]).join(',');
 
-  const url = `https://www.linkedin.com/jobs/search/?keywords=${keywords}&location=${location}&start=${numSeenJobs}&count=${PAGE_SIZE}${remote ? '&f_WRA=true' : ''}&f_AL=true`;
+  const url = `https://www.linkedin.com/jobs/search/?keywords=${keywords}&location=${location}&start=${numSeenJobs}&count=${PAGE_SIZE}${remote ? `&f_WT=${fWt}` : ''}&f_AL=true`;
 
   await page.goto(url, { waitUntil: "load" });
 
@@ -22,7 +23,7 @@ async function* fetchJobLinksUser({ page, location, keywords, remote, jobTitle, 
   const jobDescriptionRegExp = new RegExp(jobDescription, 'i');
 
   while (numSeenJobs < numAvailableJobs) {
-    const url = `https://www.linkedin.com/jobs/search/?keywords=${keywords}&location=${location}&start=${numSeenJobs}&count=${PAGE_SIZE}${remote ? '&f_WRA=true' : ''}&f_AL=true`;
+    const url = `https://www.linkedin.com/jobs/search/?keywords=${keywords}&location=${location}&start=${numSeenJobs}&count=${PAGE_SIZE}${remote ? `&f_WT=${fWt}` : ''}&f_AL=true`;
 
     numSeenJobs > 0 && await page.goto(url, { waitUntil: "load" });
 

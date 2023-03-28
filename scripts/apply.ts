@@ -55,6 +55,8 @@ const askForPauseInput = async () => {
     location: config.LOCATION,
     keywords: config.KEYWORDS,
     remote: config.REMOTE,
+    onSite: config.ON_SITE,
+    hybrid: config.HYBRID,
     jobTitle: config.JOB_TITLE,
     jobDescription: config.JOB_DESCRIPTION
   });
