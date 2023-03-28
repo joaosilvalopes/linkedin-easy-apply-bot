@@ -1,17 +1,29 @@
 import { ElementHandle, Page } from 'puppeteer';
+import LanguageDetect from 'languagedetect';
 
 import wait from '../utils/wait';
 import selectors from '../selectors';
 
 const PAGE_SIZE = 7;
+const languageDetector = new LanguageDetect();
+
+interface PARAMS {
+  page: Page,
+  location: string,
+  keywords: string,
+  workplace: { remote: boolean, onSite: boolean, hybrid: boolean },
+  jobTitle: string,
+  jobDescription: string,
+  jobDescriptionLanguages: string[]
+};
 
 /**
  * Fetches job links as a user (logged in)
  */
-async function* fetchJobLinksUser({ page, location, keywords, remote, onSite, hybrid, jobTitle, jobDescription }: { page: Page, location: string, keywords: string, remote: boolean, onSite: boolean, hybrid: boolean, jobTitle: string, jobDescription: string }): AsyncGenerator<[string, string, string]> {
+async function* fetchJobLinksUser({ page, location, keywords, workplace: { remote, onSite, hybrid }, jobTitle, jobDescription, jobDescriptionLanguages }: PARAMS): AsyncGenerator<[string, string, string]> {
   let numSeenJobs = 0;
   let numMatchingJobs = 0;
-  const fWt = [onSite,remote,hybrid].reduce((acc, c, i) => c ? [ ...acc, i + 1 ] : acc, [] as number[]).join(',');
+  const fWt = [onSite, remote, hybrid].reduce((acc, c, i) => c ? [...acc, i + 1] : acc, [] as number[]).join(',');
 
   const url = `https://www.linkedin.com/jobs/search/?keywords=${keywords}&location=${location}&start=${numSeenJobs}&count=${PAGE_SIZE}${remote ? `&f_WT=${fWt}` : ''}&f_AL=true`;
 
@@ -49,8 +61,10 @@ async function* fetchJobLinksUser({ page, location, keywords, remote, onSite, hy
         const companyName = await page.$eval(`${selectors.searchResultListItem}:nth-child(${i + 1}) ${selectors.searchResultListItemCompanyName}`, el => (el as HTMLElement).innerText).catch(() => 'Unknown');;
         const jobDescription = await page.$eval(selectors.jobDescription, el => (el as HTMLElement).innerText);
         const canApply = !!(await page.$(selectors.easyApplyButtonEnabled));
+        const jobDescriptionLanguage = languageDetector.detect(jobDescription, 1)[0][0];
+        const matchesLanguage = jobDescriptionLanguages.includes(jobDescriptionLanguage);
 
-        if (canApply && jobTitleRegExp.test(title) && jobDescriptionRegExp.test(jobDescription)) {
+        if (canApply && jobTitleRegExp.test(title) && jobDescriptionRegExp.test(jobDescription) && matchesLanguage) {
           numMatchingJobs++;
 
           yield [link, title, companyName];

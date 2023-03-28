@@ -10,6 +10,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "languagedetect": "^2.0.0",
     "puppeteer": "^19.7.1",
     "ts-node": "^10.9.1",
     "typescript": "^5.0.2"
