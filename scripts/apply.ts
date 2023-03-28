@@ -21,7 +21,7 @@ const askForPauseInput = async () => {
 
   state.paused = true;
 
-  await ask("press enter to continue the program");
+  await ask("finishing job application...\n");
 
   state.paused = false;
   console.log("unpaused");
@@ -95,9 +95,9 @@ const askForPauseInput = async () => {
 
     await listingPage.bringToFront();
 
-    while (state.paused) {
-      console.log("program paused, press enter to continue the program");
-      await wait(2000);
+    for(let shouldLog = true; state.paused; shouldLog = false){
+	shouldLog && console.log("\nProgram paused, press enter to continue the program");
+	await wait(2000);
     }
   }
 
