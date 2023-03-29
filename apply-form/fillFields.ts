@@ -5,6 +5,7 @@ import fillBoolean from './fillBoolean';
 import fillTextFields from './fillTextFields';
 import insertHomeCity from './insertHomeCity';
 import insertPhone from './insertPhone';
+import unCheckFollowCompany from './uncheckFollowCompany';
 import uploadDocs from './uploadDocs';
 import { ApplicationFormData } from '../apply';
 
@@ -14,6 +15,8 @@ async function fillFields(page: Page, formData: ApplicationFormData): Promise<vo
   await insertHomeCity(page, formData.homeCity).catch(noop);
 
   await insertPhone(page, formData.phone).catch(noop);
+
+  await unCheckFollowCompany(page);
 
   await uploadDocs(page, formData.cvPath, formData.coverLetterPath).catch(noop);
 
@@ -27,8 +30,6 @@ async function fillFields(page: Page, formData: ApplicationFormData): Promise<vo
   const booleans = formData.booleans;
 
   booleans['sponsorship'] = formData.requiresVisaSponsorship;
-
-  booleans['follow'] = false;
 
   await fillBoolean(page, booleans).catch(console.log);
 

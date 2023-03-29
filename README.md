@@ -23,7 +23,11 @@ export default {
   // JOB SEARCH PARAMETERS
   KEYWORDS: "your-job-search-keywords",
   LOCATION: "your-job-search-location",
-  REMOTE: true, // whether-you-want-remote-or-on-site-jobs(true/false)
+  WORKPLACE: {
+    REMOTE: true, // whether-you-want-remote-jobs-or-not(true/false)
+    ON_SITE: true, // whether-you-want-on-site-jobs-or-not(true/false)
+    HYBRID: true, // whether-you-want-hybrid-jobs-or-not(true/false)
+  }
   JOB_TITLE: "a-regex-to-match-with-the-job-title",
   JOB_DESCRIPTION: "a-regex-to-match-with-the-job-description",
 
