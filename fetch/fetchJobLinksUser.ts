@@ -77,11 +77,13 @@ async function* fetchJobLinksUser({ page, location, keywords, workplace: { remot
 
     for (let i = 0; i < jobListings.length; i++) {
       try {
-        const linkHandle = await page.$(`${selectors.searchResultListItem}:nth-child(${i + 1}) ${selectors.searchResultListItemLink}`) as ElementHandle<HTMLLinkElement>;
+        const [link, title] = await page.$eval(`${selectors.searchResultListItem}:nth-child(${i + 1}) ${selectors.searchResultListItemLink}`, (el) => {
+          const linkEl = el as HTMLLinkElement;
 
-        await linkHandle.click();
+          linkEl.click();
 
-        const [link, title] = await linkHandle.evaluate((el) => [el.href.trim(), el.innerText.trim()]);
+          return [linkEl.href.trim(), linkEl.innerText.trim()];
+        });
 
         await page.waitForFunction(async (selectors) => {
           const hasLoadedDescription = !!document.querySelector<HTMLElement>(selectors.jobDescription)?.innerText.trim();
