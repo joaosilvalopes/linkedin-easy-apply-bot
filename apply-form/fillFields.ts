@@ -5,7 +5,7 @@ import fillBoolean from './fillBoolean';
 import fillTextFields from './fillTextFields';
 import insertHomeCity from './insertHomeCity';
 import insertPhone from './insertPhone';
-import unCheckFollowCompany from './uncheckFollowCompany';
+import uncheckFollowCompany from './uncheckFollowCompany';
 import uploadDocs from './uploadDocs';
 import { ApplicationFormData } from '../apply';
 
@@ -16,7 +16,7 @@ async function fillFields(page: Page, formData: ApplicationFormData): Promise<vo
 
   await insertPhone(page, formData.phone).catch(noop);
 
-  await unCheckFollowCompany(page);
+  await uncheckFollowCompany(page);
 
   await uploadDocs(page, formData.cvPath, formData.coverLetterPath).catch(noop);
 

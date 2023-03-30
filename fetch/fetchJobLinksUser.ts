@@ -1,11 +1,33 @@
 import { ElementHandle, Page } from 'puppeteer';
 import LanguageDetect from 'languagedetect';
 
+import buildUrl from '../utils/buildUrl';
 import wait from '../utils/wait';
 import selectors from '../selectors';
 
 const PAGE_SIZE = 7;
 const languageDetector = new LanguageDetect();
+
+async function getJobSearchMetadata({ page, location, keywords }: { page: Page, location: string, keywords: string }) {
+  await page.goto('https://linkedin.com/jobs', { waitUntil: "load" });
+
+  await page.type(selectors.keywordInput, keywords);
+  await page.waitForSelector(selectors.locationInput, { visible: true });
+  await page.$eval(selectors.locationInput, (el, location) => (el as HTMLInputElement).value = location, location);
+  await page.type(selectors.locationInput, ' ');
+  await page.$eval('button.jobs-search-box__submit-button', (el) => el.click());
+  await page.waitForFunction(() => new URLSearchParams(document.location.search).has('geoId'));
+
+  const geoId = await page.evaluate(() => new URLSearchParams(document.location.search).get('geoId'));
+
+  const numJobsHandle = await page.waitForSelector(selectors.searchResultListText, { timeout: 5000 }) as ElementHandle<HTMLElement>;
+  const numAvailableJobs = await numJobsHandle.evaluate((el) => parseInt((el as HTMLElement).innerText.replace(',', '')));
+
+  return {
+    geoId,
+    numAvailableJobs
+  };
+};
 
 interface PARAMS {
   page: Page,
@@ -25,19 +47,30 @@ async function* fetchJobLinksUser({ page, location, keywords, workplace: { remot
   let numMatchingJobs = 0;
   const fWt = [onSite, remote, hybrid].reduce((acc, c, i) => c ? [...acc, i + 1] : acc, [] as number[]).join(',');
 
-  const url = `https://www.linkedin.com/jobs/search/?keywords=${keywords}&location=${location}&start=${numSeenJobs}&count=${PAGE_SIZE}${remote ? `&f_WT=${fWt}` : ''}&f_AL=true`;
+  const { geoId, numAvailableJobs } = await getJobSearchMetadata({ page, location, keywords });
 
-  await page.goto(url, { waitUntil: "load" });
+  const searchParams: { [key: string]: string } = {
+    keywords,
+    location,
+    start: numSeenJobs.toString(),
+    count: PAGE_SIZE.toString(),
+    f_WT: fWt,
+    f_AL: 'true'
+  };
 
-  const numJobsHandle = await page.waitForSelector(selectors.searchResultListText, { timeout: 5000 }) as ElementHandle<HTMLElement>;
-  const numAvailableJobs = await numJobsHandle.evaluate((el) => parseInt((el as HTMLElement).innerText.replace(',', '')));
+  if(geoId) {
+    searchParams.geoId = geoId.toString();
+  }
+
+  const url = buildUrl('https://www.linkedin.com/jobs/search', searchParams);
+
   const jobTitleRegExp = new RegExp(jobTitle, 'i');
   const jobDescriptionRegExp = new RegExp(jobDescription, 'i');
 
   while (numSeenJobs < numAvailableJobs) {
-    const url = `https://www.linkedin.com/jobs/search/?keywords=${keywords}&location=${location}&start=${numSeenJobs}&count=${PAGE_SIZE}${remote ? `&f_WT=${fWt}` : ''}&f_AL=true`;
+    url.searchParams.set('start', numSeenJobs.toString());
 
-    numSeenJobs > 0 && await page.goto(url, { waitUntil: "load" });
+    await page.goto(url.toString(), { waitUntil: "load" });
 
     await page.waitForSelector(`${selectors.searchResultListItem}:nth-child(${Math.min(PAGE_SIZE, numAvailableJobs - numSeenJobs)})`, { timeout: 5000 });
 
