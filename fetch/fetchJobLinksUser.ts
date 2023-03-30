@@ -53,7 +53,6 @@ async function* fetchJobLinksUser({ page, location, keywords, workplace: { remot
     keywords,
     location,
     start: numSeenJobs.toString(),
-    count: PAGE_SIZE.toString(),
     f_WT: fWt,
     f_AL: 'true'
   };
