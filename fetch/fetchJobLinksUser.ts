@@ -5,7 +5,7 @@ import buildUrl from '../utils/buildUrl';
 import wait from '../utils/wait';
 import selectors from '../selectors';
 
-const PAGE_SIZE = 7;
+const MAX_PAGE_SIZE = 7;
 const languageDetector = new LanguageDetect();
 
 async function getJobSearchMetadata({ page, location, keywords }: { page: Page, location: string, keywords: string }) {
@@ -71,11 +71,11 @@ async function* fetchJobLinksUser({ page, location, keywords, workplace: { remot
 
     await page.goto(url.toString(), { waitUntil: "load" });
 
-    await page.waitForSelector(`${selectors.searchResultListItem}:nth-child(${Math.min(PAGE_SIZE, numAvailableJobs - numSeenJobs)})`, { timeout: 5000 });
+    await page.waitForSelector(`${selectors.searchResultListItem}:nth-child(${Math.min(MAX_PAGE_SIZE, numAvailableJobs - numSeenJobs)})`, { timeout: 5000 });
 
     const jobListings = await page.$$(selectors.searchResultListItem);
 
-    for (let i = 0; i < jobListings.length; i++) {
+    for (let i = 0; i < Math.min(jobListings.length, MAX_PAGE_SIZE); i++) {
       try {
         const [link, title] = await page.$eval(`${selectors.searchResultListItem}:nth-child(${i + 1}) ${selectors.searchResultListItemLink}`, (el) => {
           const linkEl = el as HTMLLinkElement;
