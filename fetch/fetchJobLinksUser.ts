@@ -5,7 +5,7 @@ import buildUrl from '../utils/buildUrl';
 import wait from '../utils/wait';
 import selectors from '../selectors';
 
-const PAGE_SIZE = 7;
+const MAX_PAGE_SIZE = 7;
 const languageDetector = new LanguageDetect();
 
 async function getJobSearchMetadata({ page, location, keywords }: { page: Page, location: string, keywords: string }) {
@@ -53,7 +53,6 @@ async function* fetchJobLinksUser({ page, location, keywords, workplace: { remot
     keywords,
     location,
     start: numSeenJobs.toString(),
-    count: PAGE_SIZE.toString(),
     f_WT: fWt,
     f_AL: 'true'
   };
@@ -72,17 +71,19 @@ async function* fetchJobLinksUser({ page, location, keywords, workplace: { remot
 
     await page.goto(url.toString(), { waitUntil: "load" });
 
-    await page.waitForSelector(`${selectors.searchResultListItem}:nth-child(${Math.min(PAGE_SIZE, numAvailableJobs - numSeenJobs)})`, { timeout: 5000 });
+    await page.waitForSelector(`${selectors.searchResultListItem}:nth-child(${Math.min(MAX_PAGE_SIZE, numAvailableJobs - numSeenJobs)})`, { timeout: 5000 });
 
     const jobListings = await page.$$(selectors.searchResultListItem);
 
-    for (let i = 0; i < jobListings.length; i++) {
+    for (let i = 0; i < Math.min(jobListings.length, MAX_PAGE_SIZE); i++) {
       try {
-        const linkHandle = await page.$(`${selectors.searchResultListItem}:nth-child(${i + 1}) ${selectors.searchResultListItemLink}`) as ElementHandle<HTMLLinkElement>;
+        const [link, title] = await page.$eval(`${selectors.searchResultListItem}:nth-child(${i + 1}) ${selectors.searchResultListItemLink}`, (el) => {
+          const linkEl = el as HTMLLinkElement;
 
-        await linkHandle.click();
+          linkEl.click();
 
-        const [link, title] = await linkHandle.evaluate((el) => [el.href.trim(), el.innerText.trim()]);
+          return [linkEl.href.trim(), linkEl.innerText.trim()];
+        });
 
         await page.waitForFunction(async (selectors) => {
           const hasLoadedDescription = !!document.querySelector<HTMLElement>(selectors.jobDescription)?.innerText.trim();
