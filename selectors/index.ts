@@ -1,6 +1,10 @@
 export default {
   easyApplyButtonEnabled: "button.jobs-apply-button:enabled",
 
+  // Job search form
+  keywordInput: 'input[id*="jobs-search-box-keyword-id"]',
+  locationInput: 'input[id*="jobs-search-box-location-id"]',
+
   // Easy apply form
   checkbox: ".jobs-easy-apply-modal input[type='checkbox']",
   fieldset: ".jobs-easy-apply-modal fieldset",
@@ -16,6 +20,7 @@ export default {
   documentUploadInput: "input[type='file'][id*='jobs-document-upload']",
   radioInput: "input[type='radio']",
   option: "option",
+  followCompanyCheckbox: 'input[type="checkbox"]#follow-company-checkbox',
 
   // Login
   captcha: "#captcha-internal",

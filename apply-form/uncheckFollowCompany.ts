@@ -1,10 +1,12 @@
-import { Page } from "puppeteer";
+import { ElementHandle, Page } from "puppeteer";
 
-async function unCheckFollowCompany(page: Page) {
-  const checkbox = await page.$('input[type="checkbox"]#follow-company-checkbox');
+import selectors from "../selectors";
+
+async function uncheckFollowCompany(page: Page) {
+  const checkbox = await page.$(selectors.followCompanyCheckbox);
 
   if(checkbox)
-    await checkbox.evaluate(el => el.checked && el.click());
+    await (checkbox as ElementHandle<HTMLInputElement>).evaluate(el => el.checked && el.click());
 }
 
-export default unCheckFollowCompany;
+export default uncheckFollowCompany;
