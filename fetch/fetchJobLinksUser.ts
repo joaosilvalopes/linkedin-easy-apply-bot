@@ -96,7 +96,7 @@ async function* fetchJobLinksUser({ page, location, keywords, workplace: { remot
         const jobDescription = await page.$eval(selectors.jobDescription, el => (el as HTMLElement).innerText);
         const canApply = !!(await page.$(selectors.easyApplyButtonEnabled));
         const jobDescriptionLanguage = languageDetector.detect(jobDescription, 1)[0][0];
-        const matchesLanguage = jobDescriptionLanguages.includes(jobDescriptionLanguage);
+        const matchesLanguage = jobDescriptionLanguages.includes("any") || jobDescriptionLanguages.includes(jobDescriptionLanguage);
 
         if (canApply && jobTitleRegExp.test(title) && jobDescriptionRegExp.test(jobDescription) && matchesLanguage) {
           numMatchingJobs++;
