@@ -53,6 +53,7 @@ const askForPauseInput = async () => {
   const linkGenerator = fetchJobLinksUser({
     page: listingPage,
     location: config.LOCATION,
+    industry: config.INDUSTRY,
     keywords: config.KEYWORDS,
     workplace: {
       remote: config.WORKPLACE.REMOTE,

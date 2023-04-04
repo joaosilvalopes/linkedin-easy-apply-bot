@@ -35,6 +35,7 @@ interface PARAMS {
   keywords: string,
   workplace: { remote: boolean, onSite: boolean, hybrid: boolean },
   jobTitle: string,
+  industry: string,
   jobDescription: string,
   jobDescriptionLanguages: string[]
 };
@@ -42,7 +43,7 @@ interface PARAMS {
 /**
  * Fetches job links as a user (logged in)
  */
-async function* fetchJobLinksUser({ page, location, keywords, workplace: { remote, onSite, hybrid }, jobTitle, jobDescription, jobDescriptionLanguages }: PARAMS): AsyncGenerator<[string, string, string]> {
+async function* fetchJobLinksUser({ page, location, keywords, workplace: { remote, onSite, hybrid }, jobTitle, industry, jobDescription, jobDescriptionLanguages }: PARAMS): AsyncGenerator<[string, string, string]> {
   let numSeenJobs = 0;
   let numMatchingJobs = 0;
   const fWt = [onSite, remote, hybrid].reduce((acc, c, i) => c ? [...acc, i + 1] : acc, [] as number[]).join(',');
@@ -53,6 +54,7 @@ async function* fetchJobLinksUser({ page, location, keywords, workplace: { remot
     keywords,
     location,
     start: numSeenJobs.toString(),
+    f_I: industry,
     f_WT: fWt,
     f_AL: 'true'
   };

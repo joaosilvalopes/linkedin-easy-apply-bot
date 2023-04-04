@@ -105,3 +105,4 @@ dist
 
 # Ignore config
 config.ts
+auth.ts
