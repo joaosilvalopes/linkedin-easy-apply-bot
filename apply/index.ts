@@ -42,7 +42,7 @@ async function apply({ page, link, formData, shouldSubmit }: Params): Promise<vo
     return;
   }
 
-  let maxPages = 5;
+  let maxPages = 10;
 
   while (maxPages--) {
     await fillFields(page, formData).catch(noop);
