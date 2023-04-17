@@ -29,10 +29,19 @@ async function getJobSearchMetadata({ page, location, keywords }: { page: Page, 
   };
 };
 
+export type date_posted = 'PAST_WEEK' | 'PAST_MONTH' | 'PAST_24_HOURS';
+
+const datesPosted: Record<date_posted, string> = {
+  PAST_WEEK: 'r604800',
+  PAST_MONTH: 'r2592000',
+  PAST_24_HOURS: 'r86400',
+}
+
 interface PARAMS {
   page: Page,
   location: string,
   keywords: string,
+  datePosted: date_posted | null,
   workplace: { remote: boolean, onSite: boolean, hybrid: boolean },
   jobTitle: string,
   jobDescription: string,
@@ -42,7 +51,7 @@ interface PARAMS {
 /**
  * Fetches job links as a user (logged in)
  */
-async function* fetchJobLinksUser({ page, location, keywords, workplace: { remote, onSite, hybrid }, jobTitle, jobDescription, jobDescriptionLanguages }: PARAMS): AsyncGenerator<[string, string, string]> {
+async function* fetchJobLinksUser({ page, datePosted = null, location, keywords, workplace: { remote, onSite, hybrid }, jobTitle, jobDescription, jobDescriptionLanguages }: PARAMS): AsyncGenerator<[string, string, string]> {
   let numSeenJobs = 0;
   let numMatchingJobs = 0;
   const fWt = [onSite, remote, hybrid].reduce((acc, c, i) => c ? [...acc, i + 1] : acc, [] as number[]).join(',');
@@ -54,7 +63,10 @@ async function* fetchJobLinksUser({ page, location, keywords, workplace: { remot
     location,
     start: numSeenJobs.toString(),
     f_WT: fWt,
-    f_AL: 'true'
+    f_AL: 'true',
+    ...(datePosted && {
+      f_TPR: datesPosted[datePosted]
+    }),
   };
 
   if(geoId) {

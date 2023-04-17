@@ -5,6 +5,7 @@ export default {
 
   // JOB SEARCH PARAMETERS
   KEYWORDS: "javascript",
+  DATE_POSTED: "", // possible values: "PAST_24_HOURS", "PAST_WEEK", "PAST_MONTH"
   LOCATION: "Portugal",
   WORKPLACE: {
     REMOTE: true,
