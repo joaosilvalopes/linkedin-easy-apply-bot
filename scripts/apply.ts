@@ -4,7 +4,7 @@ import config from "../config";
 import ask from "../utils/ask";
 import login from "../login";
 import apply, { ApplicationFormData } from "../apply";
-import fetchJobLinksUser from "../fetch/fetchJobLinksUser";
+import fetchJobLinksUser, { date_posted } from "../fetch/fetchJobLinksUser";
 
 interface AppState {
   paused: boolean;
@@ -54,6 +54,7 @@ const askForPauseInput = async () => {
     page: listingPage,
     location: config.LOCATION,
     keywords: config.KEYWORDS,
+    datePosted: config.DATE_POSTED as date_posted,
     workplace: {
       remote: config.WORKPLACE.REMOTE,
       onSite: config.WORKPLACE.ON_SITE,
