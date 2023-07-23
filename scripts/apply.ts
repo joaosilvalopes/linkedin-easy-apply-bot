@@ -60,6 +60,7 @@ const askForPauseInput = async () => {
       hybrid: config.WORKPLACE.HYBRID,
     },
     jobTitle: config.JOB_TITLE,
+    jobCompany: config.JOB_COMPANY,
     jobDescription: config.JOB_DESCRIPTION,
     jobDescriptionLanguages: config.JOB_DESCRIPTION_LANGUAGES
   });
