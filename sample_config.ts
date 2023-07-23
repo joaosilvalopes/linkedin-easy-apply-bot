@@ -12,6 +12,7 @@ export default {
     HYBRID: false,
   },
   JOB_TITLE: "(javascript|frontend|front-end|fullstack|full-stack|nodejs|node|js).*(developer|engineer)",
+  JOB_COMPANY: "",
   JOB_DESCRIPTION: "^((?!(primeit))(.|[\n\r]))*$",
   JOB_DESCRIPTION_LANGUAGES: ["portuguese", "english"], // replace value with ["any"] to accept all job description laguages
 

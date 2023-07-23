@@ -29,6 +29,7 @@ export default {
     HYBRID: true, // whether-you-want-hybrid-jobs-or-not(true/false)
   },
   JOB_TITLE: "a-regex-to-match-with-the-job-title",
+  JOB_COMPANY: "a-regex-to-match-with-the-job-company",
   JOB_DESCRIPTION: "a-regex-to-match-with-the-job-description",
 
   // FORM DATA
