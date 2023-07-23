@@ -34,7 +34,7 @@ export default {
   searchResultListText: "small.jobs-search-results-list__text",
   searchResultListItem: ".jobs-search-results-list li.jobs-search-results__list-item",
   searchResultListItemLink: "a.job-card-list__title",
-  searchResultListItemCompanyName: "div.job-card-container__company-name, a.job-card-container__company-name",
+  searchResultListItemCompanyName: "span.job-card-container__primary-description",
   jobDescription: "div.jobs-description-content > div.jobs-description-content__text > span",
   appliedToJobFeedback: ".artdeco-inline-feedback",
 
