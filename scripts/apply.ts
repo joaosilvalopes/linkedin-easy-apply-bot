@@ -96,6 +96,7 @@ const askForPauseInput = async () => {
       console.log(`Applied to ${title} at ${companyName}`);
     } catch {
       console.log(`Error applying to ${title} at ${companyName}`);
+      await applicationPage.close();
     }
 
     await listingPage.bringToFront();
