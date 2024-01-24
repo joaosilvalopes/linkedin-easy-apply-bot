@@ -33,8 +33,10 @@ const askForPauseInput = async () => {
   const browser = await puppeteer.launch({
     headless: false,
     ignoreHTTPSErrors: true,
-    args: ["--disable-setuid-sandbox", "--no-sandbox",]
+    args: ["--disable-setuid-sandbox", "--no-sandbox",],
+    defaultViewport: null,
   });
+
   const context = await browser.createIncognitoBrowserContext();
   const listingPage = await context.newPage();
 
@@ -67,7 +69,7 @@ const askForPauseInput = async () => {
   let applicationPage: Page | null = null;
 
   for await (const [link, title, companyName] of linkGenerator) {
-    if (!applicationPage || process.env.SINGLE_PAGE !== "true")
+    if (!applicationPage || config.SINGLE_PAGE !== true)
       applicationPage = await context.newPage();
 
     await applicationPage.bringToFront();
@@ -100,9 +102,9 @@ const askForPauseInput = async () => {
 
     await listingPage.bringToFront();
 
-    for(let shouldLog = true; state.paused; shouldLog = false){
-	shouldLog && console.log("\nProgram paused, press enter to continue the program");
-	await wait(2000);
+    for (let shouldLog = true; state.paused; shouldLog = false) {
+      shouldLog && console.log("\nProgram paused, press enter to continue the program");
+      await wait(2000);
     }
   }
 
