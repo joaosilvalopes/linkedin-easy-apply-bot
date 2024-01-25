@@ -53,13 +53,13 @@ async function fillBoolean(page: Page, booleans: { [key: string]: boolean }): Pr
       const label = await page.$eval(`label[for="${id}"]`, el => el.innerText);
 
       for (const [labelRegex, value] of Object.entries(booleans)) {
+        let element = 1 // Assuming No is the second element, set is as default
         if (new RegExp(labelRegex, "i").test(label)) {
-          const option = await options[value ? 0 : 1].evaluate((el) => (el as HTMLOptionElement).value);
-
-          await select.select(option);
-
-          continue;
+          element = 0
         }
+        const option = await options[element].evaluate((el) => (el as HTMLOptionElement).value);
+        await select.select(option);
+        continue;
       }
     }
   }
