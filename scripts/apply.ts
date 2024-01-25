@@ -100,8 +100,10 @@ const askForPauseInput = async () => {
       });
 
       console.log(`Applied to ${title} at ${companyName}`);
-    } catch {
-      console.log(`Error applying to ${title} at ${companyName}`);
+      await applicationPage.close();
+    } catch (e) {
+      console.log(`Error applying to ${title} at ${companyName}`, e);
+      await applicationPage.close();
     }
 
     await listingPage.bringToFront();
