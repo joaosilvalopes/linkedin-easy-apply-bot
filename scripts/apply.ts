@@ -1,10 +1,12 @@
-import puppeteer, { Page } from "puppeteer";
+import puppeteer from "puppeteer-extra";
+import StealthPlugin from "puppeteer-extra-plugin-stealth"
 import config from "../config";
 
 import ask from "../utils/ask";
 import login from "../login";
 import apply, { ApplicationFormData } from "../apply";
 import fetchJobLinksUser from "../fetch/fetchJobLinksUser";
+import { Page } from "puppeteer";
 
 interface AppState {
   paused: boolean;
@@ -30,6 +32,7 @@ const askForPauseInput = async () => {
 };
 
 (async () => {
+  puppeteer.use(StealthPlugin())
   const browser = await puppeteer.launch({
     headless: false,
     ignoreHTTPSErrors: true,
