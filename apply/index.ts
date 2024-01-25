@@ -33,8 +33,6 @@ interface Params {
 }
 
 async function apply({ page, link, formData, shouldSubmit }: Params): Promise<void> {
-  await page.goto(link, { waitUntil: 'load', timeout: 60000 });
-
   try {
     await clickEasyApplyButton(page);
   } catch {

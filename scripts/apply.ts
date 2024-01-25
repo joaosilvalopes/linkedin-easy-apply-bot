@@ -76,6 +76,7 @@ const askForPauseInput = async () => {
       applicationPage = await context.newPage();
 
     await applicationPage.bringToFront();
+    await applicationPage.goto(link, { waitUntil: 'load', timeout: 60000 });
 
     try {
       const formData: ApplicationFormData = {
