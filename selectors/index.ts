@@ -1,5 +1,5 @@
 export default {
-  easyApplyButtonEnabled: "button.jobs-apply-button:enabled",
+  easyApplyButtonEnabled: "div.jobs-apply-button--top-card button.jobs-apply-button:enabled",
 
   // Job search form
   keywordInput: 'input[id*="jobs-search-box-keyword-id"]',
