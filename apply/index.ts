@@ -9,7 +9,10 @@ const noop = () => { };
 
 async function clickEasyApplyButton(page: Page): Promise<void> {
   await page.waitForSelector(selectors.easyApplyButtonEnabled, { timeout: 10000 });
-  await page.click(selectors.easyApplyButtonEnabled);
+  await page.hover(selectors.easyApplyButtonEnabled);
+  await page.evaluate((selector: any) => {
+    document.querySelector(selector).click();
+  }, selectors.easyApplyButtonEnabled);
 }
 
 export interface ApplicationFormData {
