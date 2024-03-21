@@ -4,6 +4,9 @@ A tool designed to save you time when applying to linkedin jobs by applying to t
 
 To run this tool follow the following steps
 
+## To Do:
+- update html search param for company name
+
 ### First step, install the project's dependencies:
 ```
 npm i
