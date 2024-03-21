@@ -96,8 +96,8 @@ const askForPauseInput = async () => {
       });
 
       console.log(`Applied to ${title} at ${companyName}`);
-    } catch {
-      console.log(`Error applying to ${title} at ${companyName}`);
+    } catch (error) {
+      console.log(`Error applying to ${title} at ${companyName}. Error: ${error}`);
     }
 
     await listingPage.bringToFront();
