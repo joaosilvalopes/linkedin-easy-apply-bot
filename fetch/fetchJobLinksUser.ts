@@ -11,6 +11,9 @@ const languageDetector = new LanguageDetect();
 async function getJobSearchMetadata({ page, location, keywords }: { page: Page, location: string, keywords: string }) {
   await page.goto('https://linkedin.com/jobs', { waitUntil: "load" });
 
+  // adding a 5 second delay for the page to be fully rendered
+  await new Promise((resolve) => setTimeout(() => resolve(1), 5e3));
+
   await page.type(selectors.keywordInput, keywords);
   await page.waitForSelector(selectors.locationInput, { visible: true });
   await page.$eval(selectors.locationInput, (el, location) => (el as HTMLInputElement).value = location, location);
