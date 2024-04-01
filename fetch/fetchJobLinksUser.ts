@@ -4,12 +4,15 @@ import LanguageDetect from 'languagedetect';
 import buildUrl from '../utils/buildUrl';
 import wait from '../utils/wait';
 import selectors from '../selectors';
+import message from '../utils/message';
 
 const MAX_PAGE_SIZE = 7;
 const languageDetector = new LanguageDetect();
 
 async function getJobSearchMetadata({ page, location, keywords }: { page: Page, location: string, keywords: string }) {
   await page.goto('https://linkedin.com/jobs', { waitUntil: "load" });
+
+  await wait(5e3);
 
   await page.type(selectors.keywordInput, keywords);
   await page.waitForSelector(selectors.locationInput, { visible: true });
@@ -116,7 +119,7 @@ async function* fetchJobLinksUser({ page, datePosted = null, location, keywords,
           yield [link, title, companyName];
         }
       } catch (e) {
-        console.log(e);
+        message(e as Error);
       }
     }
 

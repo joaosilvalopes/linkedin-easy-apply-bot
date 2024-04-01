@@ -2,6 +2,7 @@ import puppeteer, { Page } from "puppeteer";
 import config from "../config";
 
 import ask from "../utils/ask";
+import message from "../utils/message";
 import login from "../login";
 import apply, { ApplicationFormData } from "../apply";
 import fetchJobLinksUser, { date_posted } from "../fetch/fetchJobLinksUser";
@@ -24,7 +25,7 @@ const askForPauseInput = async () => {
   await ask("finishing job application...\n");
 
   state.paused = false;
-  console.log("unpaused");
+  message("unpaused");
 
   askForPauseInput();
 };
@@ -94,15 +95,16 @@ const askForPauseInput = async () => {
         shouldSubmit: process.argv[2] === "SUBMIT",
       });
 
-      console.log(`Applied to ${title} at ${companyName}`);
-    } catch {
-      console.log(`Error applying to ${title} at ${companyName}`);
+      message(`Applied to ${title} at ${companyName}`);
+    } catch(e) {
+      message(e as Error);
+      message(`Error applying to ${title} at ${companyName}`);
     }
 
     await listingPage.bringToFront();
 
     for(let shouldLog = true; state.paused; shouldLog = false){
-	shouldLog && console.log("\nProgram paused, press enter to continue the program");
+	shouldLog && message("\nProgram paused, press enter to continue the program");
 	await wait(2000);
     }
   }
