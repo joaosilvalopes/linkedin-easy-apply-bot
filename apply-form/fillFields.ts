@@ -8,6 +8,7 @@ import insertPhone from './insertPhone';
 import uncheckFollowCompany from './uncheckFollowCompany';
 import uploadDocs from './uploadDocs';
 import { ApplicationFormData } from '../apply';
+import message from '../utils/message';
 
 const noop = () => { };
 
@@ -25,20 +26,20 @@ async function fillFields(page: Page, formData: ApplicationFormData): Promise<vo
     ...formData.yearsOfExperience,
   };
 
-  await fillTextFields(page, textFields).catch(console.log);
+  await fillTextFields(page, textFields).catch(message);
 
   const booleans = formData.booleans;
 
   booleans['sponsorship'] = formData.requiresVisaSponsorship;
 
-  await fillBoolean(page, booleans).catch(console.log);
+  await fillBoolean(page, booleans).catch(message);
 
   const multipleChoiceFields = {
     ...formData.languageProficiency,
     ...formData.multipleChoiceFields,
   };
 
-  await fillMultipleChoiceFields(page, multipleChoiceFields).catch(console.log);
+  await fillMultipleChoiceFields(page, multipleChoiceFields).catch(message);
 }
 
 export default fillFields;

@@ -4,6 +4,7 @@ import LanguageDetect from 'languagedetect';
 import buildUrl from '../utils/buildUrl';
 import wait from '../utils/wait';
 import selectors from '../selectors';
+import message from '../utils/message';
 
 const MAX_PAGE_SIZE = 7;
 const languageDetector = new LanguageDetect();
@@ -119,7 +120,7 @@ async function* fetchJobLinksUser({ page, datePosted = null, location, keywords,
           yield [link, title, companyName];
         }
       } catch (e) {
-        console.log(e);
+        message(e as Error);
       }
     }
 

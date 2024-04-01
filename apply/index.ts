@@ -4,6 +4,7 @@ import selectors from '../selectors';
 import fillFields from '../apply-form/fillFields';
 import waitForNoError from '../apply-form/waitForNoError';
 import clickNextButton from '../apply-form/clickNextButton';
+import message from '../utils/message';
 
 const noop = () => { };
 
@@ -38,7 +39,7 @@ async function apply({ page, link, formData, shouldSubmit }: Params): Promise<vo
   try {
     await clickEasyApplyButton(page);
   } catch {
-    console.log(`Easy apply button not found in posting: ${link}`);
+    message(`Easy apply button not found in posting: ${link}`);
     return;
   }
 

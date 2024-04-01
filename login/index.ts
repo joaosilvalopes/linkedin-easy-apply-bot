@@ -2,6 +2,7 @@ import { Page } from 'puppeteer';
 
 import ask from '../utils/ask';
 import selectors from '../selectors';
+import message from '../utils/message';
 
 interface Params {
   page: Page;
@@ -29,7 +30,7 @@ async function login({ page, email, password }: Params): Promise<void> {
     await page.goto('https://www.linkedin.com/', { waitUntil: 'load' });
   }
 
-  console.log('Logged in to LinkedIn');
+  message('Logged in to LinkedIn');
 
   await page.click(selectors.skipButton).catch(() => { });
 }
