@@ -22,6 +22,7 @@ export default {
 
   // JOB SEARCH PARAMETERS
   KEYWORDS: "your-job-search-keywords",
+  DATE_POSTED: "", // possible values: "PAST_24_HOURS", "PAST_WEEK", "PAST_MONTH". Leave empty to default to whatever linkedin defaults to.
   LOCATION: "your-job-search-location",
   WORKPLACE: {
     REMOTE: true, // whether-you-want-remote-jobs-or-not(true/false)
