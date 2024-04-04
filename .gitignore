@@ -105,3 +105,6 @@ dist
 
 # Ignore config
 config.ts
+
+# Ignore VS Code workspace settings
+.vscode
