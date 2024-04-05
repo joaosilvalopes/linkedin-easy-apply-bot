@@ -11,7 +11,7 @@ export default {
   select: ".jobs-easy-apply-modal select",
   nextButton: ".jobs-easy-apply-modal footer button[aria-label*='next'], footer button[aria-label*='Review']",
   submit: ".jobs-easy-apply-modal footer button[aria-label*='Submit']",
-  enabledSubmitOrNextButton: ".jobs-easy-apply-modal footer button[aria-label*='Submit']:enabled, .jobs-easy-apply-modal  footer button[aria-label*='next']:enabled, .jobs-easy-apply-modal  footer button[aria-label*='Review']:enabled",
+  enabledSubmitOrNextButton: ".jobs-easy-apply-modal footer button[aria-label*='Submit']:enabled, .jobs-easy-apply-modal footer button[aria-label*='next']:enabled, .jobs-easy-apply-modal footer button[aria-label*='Review']:enabled",
   textInput: ".jobs-easy-apply-modal input[type='text'], .jobs-easy-apply-modal textarea",
   homeCity: ".jobs-easy-apply-modal input[id*='easyApplyFormElement'][id*='city-HOME-CITY']",
   easyApplyFormBackground: ".pb4",
