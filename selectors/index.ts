@@ -36,7 +36,7 @@ export default {
   searchResultListItem: ".jobs-search-results-list li.jobs-search-results__list-item",
   searchResultListItemLink: "a.job-card-list__title",
   searchResultListItemCompanyName: "div.job-card-container__company-name, a.job-card-container__company-name",
-  jobDescription: "div.jobs-description-content > div.jobs-description-content__text > span",
+  jobDescription: "div.jobs-description-content > div.jobs-description-content__text > div.mt4 > span",
   appliedToJobFeedback: ".artdeco-inline-feedback",
 
   // fetch guest
