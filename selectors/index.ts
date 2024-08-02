@@ -25,9 +25,9 @@ export default {
 
   // Login
   captcha: "#captcha-internal",
-  emailInput: "#session_key",
-  passwordInput: "#session_password",
-  loginSubmit: "button[class*='sign-in-form__submit-btn']",
+  emailInput: "input[name='session_key']",
+  passwordInput: "input[name='session_password']",
+  loginSubmit: "button[data-litms-control-urn*='login-submit']",
   skipButton: "button[text()='Skip']",
 
   // fetch user
