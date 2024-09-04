@@ -23,10 +23,11 @@ export default {
   followCompanyCheckbox: 'input[type="checkbox"]#follow-company-checkbox',
 
   // Login
+  loginWithEmailButton: "a[class*='sign-in-form__sign-in-cta']",
   captcha: "#captcha-internal",
-  emailInput: "#session_key",
-  passwordInput: "#session_password",
-  loginSubmit: "button[class*='sign-in-form__submit-btn']",
+  emailInput: "#username",
+  passwordInput: "#password",
+  loginSubmit: "button[class*='btn__primary--large']",
   skipButton: "button[text()='Skip']",
 
   // fetch user

@@ -12,6 +12,7 @@ interface Params {
 async function login({ page, email, password }: Params): Promise<void> {
   // Navigate to LinkedIn
   await page.goto('https://www.linkedin.com/', { waitUntil: 'load' });
+  await page.click(selectors.loginWithEmailButton)
 
   // Enter login credentials and submit the form
   await page.type(selectors.emailInput, email);
@@ -28,6 +29,7 @@ async function login({ page, email, password }: Params): Promise<void> {
     await ask('Please solve the captcha and then press enter');
     await page.goto('https://www.linkedin.com/', { waitUntil: 'load' });
   }
+  setTimeout(() => { }, 10000)
 
   console.log('Logged in to LinkedIn');
 

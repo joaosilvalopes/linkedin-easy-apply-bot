@@ -48,6 +48,8 @@ const askForPauseInput = async () => {
     password: config.LINKEDIN_PASSWORD
   });
 
+  await wait(20000); //for two factor auth  
+
   askForPauseInput();
 
   const linkGenerator = fetchJobLinksUser({
@@ -100,9 +102,9 @@ const askForPauseInput = async () => {
 
     await listingPage.bringToFront();
 
-    for(let shouldLog = true; state.paused; shouldLog = false){
-	shouldLog && console.log("\nProgram paused, press enter to continue the program");
-	await wait(2000);
+    for (let shouldLog = true; state.paused; shouldLog = false) {
+      shouldLog && console.log("\nProgram paused, press enter to continue the program");
+      await wait(2000);
     }
   }
 
