@@ -72,3 +72,61 @@ To run the program without pressing the submit form button (for testing purposes
 ```
 npm run start
 ```
+
+
+
+Main Process (IIFE)
+├── Initialize Browser (Puppeteer)
+|   └── Launch browser
+|        ├── Headless: false (browser is visible)
+|        ├── Create browser context
+|        └── Close initial unused tab
+|
+├── Login to LinkedIn
+|   └── login({
+|        ├── email: config.LINKEDIN_EMAIL
+|        └── password: config.LINKEDIN_PASSWORD
+|       })
+|
+├── askForPauseInput() [Recursive Function]
+|   ├── Prompts user to pause the script
+|   ├── Sets state.paused = true (pause the script)
+|   └── When user resumes:
+|       └── Sets state.paused = false (unpauses script)
+|
+├── Generate job links (fetchJobLinksUser)
+|   └── linkGenerator = fetchJobLinksUser({
+|        ├── page: listingPage
+|        ├── location: config.LOCATION
+|        ├── keywords: config.KEYWORDS
+|        ├── workplace: config.WORKPLACE
+|        ├── jobTitle: config.JOB_TITLE
+|        └── jobDescription: config.JOB_DESCRIPTION
+|       })
+|
+└── Loop through job links (for-await loop)
+    ├── Check if new page is needed (SINGLE_PAGE)
+    |   ├── If true: open new application page
+    |   └── Else: use existing page
+    |
+    ├── Try to apply for each job
+    |   └── apply({
+    |        ├── page: applicationPage
+    |        ├── link: current job link
+    |        ├── formData: {
+    |        |    ├── phone: config.PHONE
+    |        |    ├── cvPath: config.CV_PATH
+    |        |    ├── coverLetterPath: config.COVER_LETTER_PATH
+    |        |    ├── yearsOfExperience: config.YEARS_OF_EXPERIENCE
+    |        |    ├── languageProficiency: config.LANGUAGE_PROFICIENCY
+    |        |    └── multipleChoiceFields: config.MULTIPLE_CHOICE_FIELDS
+    |        }
+    |        └── shouldSubmit: process.argv[2] === "SUBMIT"
+    |       })
+    |
+    ├── Error Handling
+    |   └── If error: log `Error applying to ${title} at ${companyName}`
+    |
+    └── Pause Check (state.paused)
+        ├── Loop waiting while `state.paused = true`
+        └── Resume when `state.paused = false`
