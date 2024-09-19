@@ -79,6 +79,8 @@ npm run start
 This script automates the process of applying for jobs on LinkedIn using Puppeteer.
 
 ## Main Process (IIFE)
+
+```plaintext
 ├── **Initialize Browser (Puppeteer)**
 │   ├── Launch browser
 │   │   ├── Headless: `false` (browser is visible)
