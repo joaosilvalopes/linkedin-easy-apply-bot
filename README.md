@@ -62,6 +62,8 @@ export default {
 }
 ```
 
+https://platform.openai.com/api-keys
+
 
 1. secrets.yaml
 This file contains sensitive information. Never share or commit this file to version control.
