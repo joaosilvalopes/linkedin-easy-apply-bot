@@ -33,10 +33,10 @@ export default {
   // fetch user
   searchResultList: ".jobs-search-results-list",
   searchResultListText: "small.jobs-search-results-list__text",
-  searchResultListItem: ".jobs-search-results-list li.jobs-search-results__list-item",
-  searchResultListItemLink: "a.job-card-list__title",
+  searchResultListItem: "li.scaffold-layout__list-item",
+  searchResultListItemLink: "a.job-card-container__link",
   searchResultListItemCompanyName: "div.job-card-container__company-name, a.job-card-container__company-name",
-  jobDescription: "div.jobs-description-content > div.jobs-description-content__text > div.mt4 > span",
+  jobDescription: "div.jobs-description-content > div.jobs-description-content__text--stretch > div.mt4 > p",
   appliedToJobFeedback: ".artdeco-inline-feedback",
 
   // fetch guest
