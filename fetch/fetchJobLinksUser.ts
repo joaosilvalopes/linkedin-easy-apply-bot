@@ -107,7 +107,7 @@ async function* fetchJobLinksUser({ page, datePosted = null, location, keywords,
           return hasLoadedStatus && hasLoadedDescription;
         }, {}, selectors);
 
-        const companyName = await page.$eval(`${selectors.searchResultListItem}:nth-child(${i + 1}) ${selectors.searchResultListItemCompanyName}`, el => (el as HTMLElement).innerText).catch(() => 'Unknown');;
+        const companyName = await page.$eval(`${selectors.searchResultListItem}:nth-child(${i + 1}) ${selectors.searchResultListItemCompanyName}`, el => (el as HTMLElement).innerText).catch(() => 'Unknown');
         const jobDescription = await page.$eval(selectors.jobDescription, el => (el as HTMLElement).innerText);
         const canApply = !!(await page.$(selectors.easyApplyButtonEnabled));
         const jobDescriptionLanguage = languageDetector.detect(jobDescription, 1)[0][0];
