@@ -26,6 +26,7 @@ export interface ApplicationFormData {
   booleans: { [key: string]: boolean };
   textFields: { [key: string]: string };
   multipleChoiceFields: { [key: string]: string };
+  multipleCheckboxFields: { [key: string]: string };
 }
 
 interface Params {

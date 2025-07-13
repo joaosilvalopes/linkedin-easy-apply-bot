@@ -24,11 +24,15 @@ export default {
   option: "option",
   followCompanyCheckbox: 'input[type="checkbox"]#follow-company-checkbox',
 
+  // Easy apply form multiple checkbox
+  multipleCheckboxField: `fieldset[data-test*="checkbox-form-component"]`,
+  multipleCheckboxes: "label[data-test-text-selectable-option__label]",
+
   // Login
   captcha: "#captcha-internal",
-  emailInput: "#session_key",
-  passwordInput: "#session_password",
-  loginSubmit: "button[class*='sign-in-form__submit-btn']",
+  emailInput: "#username",
+  passwordInput: "#password",
+  loginSubmit: 'button[type="submit"][aria-label="Sign in"]',
   skipButton: "button[text()='Skip']",
 
   // fetch user

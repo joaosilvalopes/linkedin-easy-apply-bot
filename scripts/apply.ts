@@ -48,6 +48,8 @@ const askForPauseInput = async () => {
     password: config.LINKEDIN_PASSWORD
   });
 
+  await wait(30000); // pause for 30 seconds
+
   askForPauseInput();
 
   const linkGenerator = fetchJobLinksUser({
@@ -86,6 +88,7 @@ const askForPauseInput = async () => {
         booleans: config.BOOLEANS,
         textFields: config.TEXT_FIELDS,
         multipleChoiceFields: config.MULTIPLE_CHOICE_FIELDS,
+        multipleCheckboxFields: config.MULTIPLE_CHECKBOX_FIELDS,
       };
 
       await apply({
