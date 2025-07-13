@@ -103,5 +103,9 @@ dist
 # TernJS port file
 .tern-port
 
+# VSCode files
+.vscode
+
 # Ignore config
 config.ts
+auth.ts

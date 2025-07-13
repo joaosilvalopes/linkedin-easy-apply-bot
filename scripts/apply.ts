@@ -48,11 +48,15 @@ const askForPauseInput = async () => {
     password: config.LINKEDIN_PASSWORD
   });
 
+  await wait(30000); // pause for 30 seconds
+
   askForPauseInput();
 
   const linkGenerator = fetchJobLinksUser({
     page: listingPage,
     location: config.LOCATION,
+    salary: config.JOB_SALARY_BAND,
+    industry: config.INDUSTRY,
     keywords: config.KEYWORDS,
     workplace: {
       remote: config.WORKPLACE.REMOTE,
@@ -84,6 +88,7 @@ const askForPauseInput = async () => {
         booleans: config.BOOLEANS,
         textFields: config.TEXT_FIELDS,
         multipleChoiceFields: config.MULTIPLE_CHOICE_FIELDS,
+        multipleCheckboxFields: config.MULTIPLE_CHECKBOX_FIELDS,
       };
 
       await apply({
@@ -94,8 +99,8 @@ const askForPauseInput = async () => {
       });
 
       console.log(`Applied to ${title} at ${companyName}`);
-    } catch {
-      console.log(`Error applying to ${title} at ${companyName}`);
+    } catch (error) {
+      console.log(`Error applying to ${title} at ${companyName}. Error: ${error}`);
     }
 
     await listingPage.bringToFront();

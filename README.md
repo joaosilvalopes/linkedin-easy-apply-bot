@@ -4,6 +4,9 @@ A tool designed to save you time when applying to linkedin jobs by applying to t
 
 To run this tool follow the following steps
 
+## To Do:
+- update html search param for company name
+
 ### First step, install the project's dependencies:
 ```
 npm i
@@ -30,6 +33,17 @@ export default {
   },
   JOB_TITLE: "a-regex-to-match-with-the-job-title",
   JOB_DESCRIPTION: "a-regex-to-match-with-the-job-description",
+  // salary bands on linkedin are:
+  // 1: 40
+  // 2: 60
+  // 3: 80
+  // 4: 100
+  // 5: 120
+  // 6: 140
+  // 7: 160
+  // 8: 180
+  // 9: 200
+  JOB_SALARY_BAND: "8", // number from above
 
   // FORM DATA
   PHONE: "your-phone-number",

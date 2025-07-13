@@ -1,6 +1,7 @@
 import { Page } from 'puppeteer';
 
 import fillMultipleChoiceFields from './fillMultipleChoiceFields';
+import fillMultipleCheckboxFields from './fillMultipleCheckboxFields';
 import fillBoolean from './fillBoolean';
 import fillTextFields from './fillTextFields';
 import insertHomeCity from './insertHomeCity';
@@ -39,6 +40,12 @@ async function fillFields(page: Page, formData: ApplicationFormData): Promise<vo
   };
 
   await fillMultipleChoiceFields(page, multipleChoiceFields).catch(console.log);
+
+  const multipleCheckboxFields = {
+    ...formData.multipleCheckboxFields,
+  };
+
+  await fillMultipleCheckboxFields(page, multipleCheckboxFields).catch(console.log);
 }
 
 export default fillFields;

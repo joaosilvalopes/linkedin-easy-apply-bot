@@ -9,7 +9,10 @@ const noop = () => { };
 
 async function clickEasyApplyButton(page: Page): Promise<void> {
   await page.waitForSelector(selectors.easyApplyButtonEnabled, { timeout: 10000 });
-  await page.click(selectors.easyApplyButtonEnabled);
+  await page.hover(selectors.easyApplyButtonEnabled);
+  await page.evaluate((selector: any) => {
+    document.querySelector(selector).click();
+  }, selectors.easyApplyButtonEnabled);
 }
 
 export interface ApplicationFormData {
@@ -23,6 +26,7 @@ export interface ApplicationFormData {
   booleans: { [key: string]: boolean };
   textFields: { [key: string]: string };
   multipleChoiceFields: { [key: string]: string };
+  multipleCheckboxFields: { [key: string]: string };
 }
 
 interface Params {
@@ -42,7 +46,7 @@ async function apply({ page, link, formData, shouldSubmit }: Params): Promise<vo
     return;
   }
 
-  let maxPages = 5;
+  let maxPages = 10;
 
   while (maxPages--) {
     await fillFields(page, formData).catch(noop);

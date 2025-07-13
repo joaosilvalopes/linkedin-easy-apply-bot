@@ -11,6 +11,8 @@ export default {
     ON_SITE: true,
     HYBRID: false,
   },
+  INDUSTRY: "", //see industry codes here: https://learn.microsoft.com/en-us/linkedin/shared/references/reference-tables/industry-codes
+  // INDUSTRY: "47,94,120", values should be separated by commas
   JOB_TITLE: "(javascript|frontend|front-end|fullstack|full-stack|nodejs|node|js).*(developer|engineer)",
   JOB_DESCRIPTION: "^((?!(primeit))(.|[\n\r]))*$",
   JOB_DESCRIPTION_LANGUAGES: ["portuguese", "english"], // replace value with ["any"] to accept all job description laguages

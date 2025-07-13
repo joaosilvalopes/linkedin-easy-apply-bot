@@ -9,9 +9,11 @@ export default {
   checkbox: ".jobs-easy-apply-modal input[type='checkbox']",
   fieldset: ".jobs-easy-apply-modal fieldset",
   select: ".jobs-easy-apply-modal select",
-  nextButton: ".jobs-easy-apply-modal footer button[aria-label*='next'], footer button[aria-label*='Review']",
+  // nextButton: ".jobs-easy-apply-modal footer button[aria-label*='next'], footer button[aria-label*='Review']",
+  nextButton: ".jobs-easy-apply-modal footer button[aria-label*='next'], footer button[aria-label*='Review'], button[aria-label*='Continue to next step']",
   submit: ".jobs-easy-apply-modal footer button[aria-label*='Submit']",
-  enabledSubmitOrNextButton: ".jobs-easy-apply-modal footer button[aria-label*='Submit']:enabled, .jobs-easy-apply-modal  footer button[aria-label*='next']:enabled, .jobs-easy-apply-modal  footer button[aria-label*='Review']:enabled",
+  // enabledSubmitOrNextButton: ".jobs-easy-apply-modal footer button[aria-label*='Submit']:enabled, .jobs-easy-apply-modal  footer button[aria-label*='next']:enabled, .jobs-easy-apply-modal  footer button[aria-label*='Review']:enabled",
+  enabledSubmitOrNextButton: ".jobs-easy-apply-modal footer button[aria-label*='Submit']:enabled, .jobs-easy-apply-modal footer button[aria-label*='next']:enabled, .jobs-easy-apply-modal footer button[aria-label*='Review']:enabled, button[aria-label*='Continue to next step']:enabled",
   textInput: ".jobs-easy-apply-modal input[type='text'], .jobs-easy-apply-modal textarea",
   homeCity: ".jobs-easy-apply-modal input[id*='easyApplyFormElement'][id*='city-HOME-CITY']",
   phone: ".jobs-easy-apply-modal input[id*='easyApplyFormElement'][id*='phoneNumber']",
@@ -22,11 +24,15 @@ export default {
   option: "option",
   followCompanyCheckbox: 'input[type="checkbox"]#follow-company-checkbox',
 
+  // Easy apply form multiple checkbox
+  multipleCheckboxField: `fieldset[data-test*="checkbox-form-component"]`,
+  multipleCheckboxes: "label[data-test-text-selectable-option__label]",
+
   // Login
   captcha: "#captcha-internal",
-  emailInput: "#session_key",
-  passwordInput: "#session_password",
-  loginSubmit: "button[class*='sign-in-form__submit-btn']",
+  emailInput: "#username",
+  passwordInput: "#password",
+  loginSubmit: 'button[type="submit"][aria-label="Sign in"]',
   skipButton: "button[text()='Skip']",
 
   // fetch user
@@ -34,7 +40,7 @@ export default {
   searchResultListText: "small.jobs-search-results-list__text",
   searchResultListItem: ".jobs-search-results-list li.jobs-search-results__list-item",
   searchResultListItemLink: "a.job-card-list__title",
-  searchResultListItemCompanyName: "div.job-card-container__company-name, a.job-card-container__company-name",
+  searchResultListItemCompanyName: "div.artdeco-entity-lockup__subtitle > span.job-card-container__primary-description",
   jobDescription: "div.jobs-description-content > div.jobs-description-content__text > span",
   appliedToJobFeedback: ".artdeco-inline-feedback",
 
