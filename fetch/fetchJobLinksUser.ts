@@ -39,7 +39,7 @@ async function getJobSearchMetadata({ page, location, keywords }: { page: Page, 
   //get numAvailableJobs
   await page.waitForTimeout(3000) //wait for search results to load to get the correct num of jobs (not ideal lol)
 
-  const numJobsHandle = await page.waitForSelector(selectors.searchResultListText, { timeout: 5000 }) as ElementHandle<HTMLElement>;
+  const numJobsHandle = await page.waitForSelector(selectors.searchResultListText, { timeout: 10000 }) as ElementHandle<HTMLElement>;
   
   const numAvailableJobs = await numJobsHandle.evaluate((el) => {
     const span = el.firstElementChild as HTMLElement; // first (and only) child
@@ -75,6 +75,7 @@ async function* fetchJobLinksUser({ page, location, keywords, workplace: { remot
 
   const { geoId, numAvailableJobs } = await getJobSearchMetadata({ page, location, keywords });
 
+  // Build search parameters for jobs page
   const searchParams: { [key: string]: string } = {
     keywords,
     location,
@@ -87,22 +88,27 @@ async function* fetchJobLinksUser({ page, location, keywords, workplace: { remot
     searchParams.geoId = geoId.toString();
   }
 
+  // Construct the full search URL
   const url = buildUrl('https://www.linkedin.com/jobs/search', searchParams);
 
+  // Prepare regex for job title and description filtering
   const jobTitleRegExp = new RegExp(jobTitle, 'i');
   const jobDescriptionRegExp = new RegExp(jobDescription, 'i');
 
+  // Loop through all available jobs (pagination)
   while (numSeenJobs < numAvailableJobs) {
     url.searchParams.set('start', numSeenJobs.toString());
 
     await page.goto(url.toString(), { waitUntil: "load" });
 
-    await page.waitForSelector(`${selectors.searchResultListItem}:nth-child(${Math.min(MAX_PAGE_SIZE, numAvailableJobs - numSeenJobs)})`, { timeout: 5000 });
+    await page.waitForSelector(`${selectors.searchResultListItem}:nth-child(${Math.min(MAX_PAGE_SIZE, numAvailableJobs - numSeenJobs)})`, { timeout: 10000 });
 
     const jobListings = await page.$$(selectors.searchResultListItem);
 
+    // Extract job link and title, click to open job details
     for (let i = 0; i < Math.min(jobListings.length, MAX_PAGE_SIZE); i++) {
       try {
+
         const [link, title] = await page.$eval(`${selectors.searchResultListItem}:nth-child(${i + 1}) ${selectors.searchResultListItemLink}`, (el) => {
           const linkEl = el as HTMLLinkElement;
 
@@ -119,10 +125,14 @@ async function* fetchJobLinksUser({ page, location, keywords, workplace: { remot
         }, {}, selectors);
 
         const companyName = await page.$eval(`${selectors.searchResultListItem}:nth-child(${i + 1}) ${selectors.searchResultListItemCompanyName}`, el => (el as HTMLElement).innerText).catch(() => 'Unknown');;
+        
+
+        
         const jobDescription = await page.$eval(selectors.jobDescription, el => (el as HTMLElement).innerText);
         const canApply = !!(await page.$(selectors.easyApplyButtonEnabled));
         const jobDescriptionLanguage = languageDetector.detect(jobDescription, 1)[0][0];
         const matchesLanguage = jobDescriptionLanguages.includes("any") || jobDescriptionLanguages.includes(jobDescriptionLanguage);
+
 
         if (canApply && jobTitleRegExp.test(title) && jobDescriptionRegExp.test(jobDescription) && matchesLanguage) {
           numMatchingJobs++;

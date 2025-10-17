@@ -32,10 +32,11 @@ export default {
   // fetch user
   searchResultList: ".jobs-search-results-list",
   searchResultListText: "small.jobs-search-results-list__text",
-  searchResultListItem: ".jobs-search-results-list li.jobs-search-results__list-item",
-  searchResultListItemLink: "a.job-card-list__title",
-  searchResultListItemCompanyName: "div.job-card-container__company-name, a.job-card-container__company-name",
-  jobDescription: "div.jobs-description-content > div.jobs-description-content__text > span",
+  //searchResultListItem: ".jobs-search-results-list li.jobs-search-results__list-item",
+  searchResultListItem: 'li[id^="ember"]',
+  searchResultListItemLink: "a.job-card-list__title--link",
+  searchResultListItemCompanyName: "div.artdeco-entity-lockup__subtitle > span",
+  jobDescription: "div.jobs-description-content span",
   appliedToJobFeedback: ".artdeco-inline-feedback",
 
   // fetch guest
