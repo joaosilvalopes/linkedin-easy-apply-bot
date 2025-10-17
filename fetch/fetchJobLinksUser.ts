@@ -9,19 +9,45 @@ const MAX_PAGE_SIZE = 7;
 const languageDetector = new LanguageDetect();
 
 async function getJobSearchMetadata({ page, location, keywords }: { page: Page, location: string, keywords: string }) {
-  await page.goto('https://linkedin.com/jobs', { waitUntil: "load" });
+  await page.goto('https://linkedin.com/jobs/search', { waitUntil: "load" }); //goto to jobs page
 
-  await page.type(selectors.keywordInput, keywords);
+
+  
+  //deal with keyword box
+  await page.waitForSelector(selectors.keywordInput, { visible: true }); //wait for keyword box to load
+  await page.type(selectors.keywordInput, keywords);                      //fill keyword box
+
+
+  //deal with location box
   await page.waitForSelector(selectors.locationInput, { visible: true });
-  await page.$eval(selectors.locationInput, (el, location) => (el as HTMLInputElement).value = location, location);
-  await page.type(selectors.locationInput, ' ');
-  await page.$eval('button.jobs-search-box__submit-button', (el) => el.click());
-  await page.waitForFunction(() => new URLSearchParams(document.location.search).has('geoId'));
+  await page.click(selectors.locationInput, { clickCount: 3 }); // select all text
+  await page.keyboard.press('Backspace');                       // delete it
+  await page.type(selectors.locationInput, location);           //type location
 
+
+  //get search results
+  await page.$eval('button.jobs-search-box__submit-button', (el) => el.click());
+
+
+
+
+  //get geoId
+  await page.waitForFunction(() => new URLSearchParams(document.location.search).has('geoId'));
   const geoId = await page.evaluate(() => new URLSearchParams(document.location.search).get('geoId'));
 
+
+  //get numAvailableJobs
+  await page.waitForTimeout(3000) //wait for search results to load to get the correct num of jobs (not ideal lol)
+
   const numJobsHandle = await page.waitForSelector(selectors.searchResultListText, { timeout: 5000 }) as ElementHandle<HTMLElement>;
-  const numAvailableJobs = await numJobsHandle.evaluate((el) => parseInt((el as HTMLElement).innerText.replace(',', '')));
+  
+  const numAvailableJobs = await numJobsHandle.evaluate((el) => {
+    const span = el.firstElementChild as HTMLElement; // first (and only) child
+    return parseInt(span.innerText.replace(/,/g, ''), 10);
+  });
+
+  console.log("geoId: " + geoId)
+  console.log("numAvailableJobs: " + numAvailableJobs)
 
   return {
     geoId,

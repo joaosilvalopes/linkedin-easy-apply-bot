@@ -2,7 +2,7 @@ export default {
   easyApplyButtonEnabled: "button.jobs-apply-button:enabled",
 
   // Job search form
-  keywordInput: 'input[id*="jobs-search-box-keyword-id"]',
+  keywordInput: 'input[id^="jobs-search-box-keyword-id-ember"]',
   locationInput: 'input[id*="jobs-search-box-location-id"]',
 
   // Easy apply form

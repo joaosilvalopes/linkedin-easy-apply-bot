@@ -33,12 +33,14 @@ const askForPauseInput = async () => {
   const browser = await puppeteer.launch({
     headless: false,
     ignoreHTTPSErrors: true,
-    args: ["--disable-setuid-sandbox", "--no-sandbox",]
+    args: ["--disable-setuid-sandbox", "--no-sandbox", '--start-maximized']
   });
   const context = await browser.createIncognitoBrowserContext();
   const listingPage = await context.newPage();
 
   const pages = await browser.pages();
+
+  pages.forEach(async page => await page.setViewport({ width: 0, height: 0 }));
 
   await pages[0].close();
 
