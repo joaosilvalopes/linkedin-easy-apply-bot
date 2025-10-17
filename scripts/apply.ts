@@ -1,10 +1,12 @@
-import puppeteer, { Page } from "puppeteer";
+import puppeteer from "puppeteer-extra";
+import StealthPlugin from "puppeteer-extra-plugin-stealth"
 import config from "../config";
 
 import ask from "../utils/ask";
 import login from "../login";
 import apply, { ApplicationFormData } from "../apply";
 import fetchJobLinksUser from "../fetch/fetchJobLinksUser";
+import { Page } from "puppeteer";
 
 interface AppState {
   paused: boolean;
@@ -30,11 +32,14 @@ const askForPauseInput = async () => {
 };
 
 (async () => {
+  puppeteer.use(StealthPlugin())
   const browser = await puppeteer.launch({
     headless: false,
     ignoreHTTPSErrors: true,
-    args: ["--disable-setuid-sandbox", "--no-sandbox",]
+    args: ["--disable-setuid-sandbox", "--no-sandbox",],
+    defaultViewport: null,
   });
+
   const context = await browser.createIncognitoBrowserContext();
   const listingPage = await context.newPage();
 
@@ -67,10 +72,11 @@ const askForPauseInput = async () => {
   let applicationPage: Page | null = null;
 
   for await (const [link, title, companyName] of linkGenerator) {
-    if (!applicationPage || process.env.SINGLE_PAGE !== "true")
+    if (!applicationPage || config.SINGLE_PAGE !== true)
       applicationPage = await context.newPage();
 
     await applicationPage.bringToFront();
+    await applicationPage.goto(link, { waitUntil: 'load', timeout: 60000 });
 
     try {
       const formData: ApplicationFormData = {
@@ -94,15 +100,17 @@ const askForPauseInput = async () => {
       });
 
       console.log(`Applied to ${title} at ${companyName}`);
-    } catch {
-      console.log(`Error applying to ${title} at ${companyName}`);
+      await applicationPage.close();
+    } catch (e) {
+      console.log(`Error applying to ${title} at ${companyName}`, e);
+      // await applicationPage.close();
     }
 
     await listingPage.bringToFront();
 
-    for(let shouldLog = true; state.paused; shouldLog = false){
-	shouldLog && console.log("\nProgram paused, press enter to continue the program");
-	await wait(2000);
+    for (let shouldLog = true; state.paused; shouldLog = false) {
+      shouldLog && console.log("\nProgram paused, press enter to continue the program");
+      await wait(2000);
     }
   }
 

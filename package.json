@@ -12,7 +12,9 @@
   "dependencies": {
     "languagedetect": "^2.0.0",
     "puppeteer": "^19.7.1",
+    "puppeteer-extra": "^3.3.6",
+    "puppeteer-extra-plugin-stealth": "^2.11.2",
     "ts-node": "^10.9.1",
-    "typescript": "^5.0.2"
+    "typescript": "^5.3.3"
   }
 }
